@@ -1,4 +1,5 @@
 import Home from '../pages/Home';
+import Bookcases from '../pages/Bookcases';
 import Books from '../pages/Books';
 import Login from '../pages/Login';
 import NotFound from '../pages/NotFound';
@@ -12,6 +13,9 @@ const router = async () => {
 	switch (route) {
 		case '/':
 			await Home(root);
+			break;
+		case '/bookcases':
+			await Bookcases(root);
 			break;
 		case '/books':
 			await Books(root);
