@@ -20,6 +20,7 @@ const Header = (root) => {
 		const logoutBtn = document.querySelector('#logoutBtn');
 
 		logoutBtn.addEventListener('click', () => {
+			window.localStorage.removeItem('token');
 			window.location.href = `${hostname}/#login`;
 		});
 	} catch (error) {

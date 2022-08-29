@@ -3,9 +3,13 @@
 	background: linear-gradient(to right, #8b008b, #fff0f5);
 } */
 
-.bg {
-	background-image: url(../img/BG.jpg);
-	background-position: center center;
+/** Login */
+.bg-login {
+	min-height: 200px;
+	background-image: url('../assets/imgs/login-bg.jpg');
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
 }
 
 body {

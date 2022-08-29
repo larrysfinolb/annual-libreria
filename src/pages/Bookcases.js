@@ -11,28 +11,41 @@ const Bookcases = async (root) => {
 				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 					<h2 class="h1">Estantes</h2>
 				</div>
-				<section class="mb-3 border-bottom d-flex flex-column gap-2">
+				<section class="mb-3 d-flex flex-column gap-2">
 					<h3 class="h2">Añade un Nuevo Estante</h3>
 					<form id="createForm" class="row g-3 w-100 mx-auto">
-							<div class="col-sm-6">
-								<label for="" class="form-label">Codigo del Estante</label>
-								<input type="text" class="form-control" id="" required>
-							</div>
-							<div class="col-sm-6">
-								<label for="" class="form-label">Estado del Estante (Activo)</label>
-								<input type="number" class="form-control" id="" step="1" min="0" max="1" required>
-							</div>
-							<div class="col-12">
-								<label for="" class="form-label">Descripcion del Estante</label>
-								<input type="text" class="form-control" id="" required>
-							</div>
-							<div class="col-12">
-								<button class="btn btn-dark btn-lg w-100" type="submit">Añadir</button>
-							</div>
+						<div class="col-sm-6">
+							<label for="" class="form-label fs-5">Codigo del Estante</label>
+							<input type="text" class="form-control form-control-lg" id="" required>
+						</div>
+						<div class="col-sm-6">
+							<label for="" class="form-label fs-5">Estado del Estante (Activo)</label>
+							<input type="number" class="form-control form-control-lg" id="" step="1" min="0" max="1" required>
+						</div>
+						<div class="col-12">
+							<label for="" class="form-label fs-5">Descripcion del Estante</label>
+							<input type="text" class="form-control form-control-lg" id="" required>
+						</div>
+						<div class="col-12">
+							<button class="btn btn-dark btn-lg w-100" type="submit">Añadir</button>
+						</div>
 					</form>
 				</section>
-				<section>
+				<section class="mb-3 d-flex flex-column gap-2">
 					<h3 class="h2">Lista de Todos los Estantes</h3>
+					<div class="table-responsive">
+						<table class="table table-striped table-sm col-12">
+							<thead>
+								<tr>
+									<th scope="col">#</th>
+									<th scope="col">CODIGO</th>
+									<th scope="col">DESCRIPCION</th>
+									<th scope="col">ACTIVO</th>
+								</tr>
+							</thead>
+							<tbody id="tbody"></tbody>
+						</table>
+					</div>
 				</section>
 			</main>
 		</div>
