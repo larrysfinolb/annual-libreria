@@ -10,7 +10,7 @@ const loginSaint = async (idUser, password) => {
 		const result = await axios.post(URL, { idUser, password });
 		return result.data;
 	} catch (error) {
-		console.log('Error in the API:', error);
+		console.log('Error en la API:', error);
 	}
 };
 
@@ -19,16 +19,30 @@ const getAllBookcases = async (token) => {
 	const URL = `${API}/bookcases/get-all`;
 
 	try {
+		const result = await axios.post(URL, { token });
+		return result.data;
 	} catch (error) {
-		console.log('Error in the API:', error);
+		console.log('Error en la API:', error);
 	}
 };
 const createBookcases = async (deposito, token) => {
 	const URL = `${API}/bookcases/create`;
 
 	try {
+		const result = await axios.post(URL, { deposito, token });
+		return result.data;
 	} catch (error) {
-		console.log('Error in the API:', error);
+		console.log('Error en la API:', error);
+	}
+};
+const deleteBookcases = async (codigoDeposito, token) => {
+	const URL = `${API}/bookcases/delete`;
+
+	try {
+		const result = await axios.post(URL, { codigoDeposito, token });
+		return result.data;
+	} catch (error) {
+		console.log('Error en la API:', error);
 	}
 };
 
@@ -36,4 +50,5 @@ module.exports = {
 	loginSaint,
 	getAllBookcases,
 	createBookcases,
+	deleteBookcases,
 };

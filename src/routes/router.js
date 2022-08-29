@@ -20,10 +20,10 @@ const router = async () => {
 			await Home(root);
 			break;
 		case '/bookcases':
-			await Bookcases(root);
+			await Bookcases(root, token);
 			break;
 		case '/books':
-			await Books(root);
+			await Books(root, token);
 			break;
 		case '/clients':
 			break;

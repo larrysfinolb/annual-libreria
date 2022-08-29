@@ -32,10 +32,10 @@ const Login = async (root) => {
     `;
 	root.innerHTML = view;
 
-	document.querySelector('#loginForm').addEventListener('submit', async (e) => {
-		e.preventDefault();
+	try {
+		document.querySelector('#loginForm').addEventListener('submit', async (e) => {
+			e.preventDefault();
 
-		try {
 			const alert = document.querySelector('#alert');
 
 			const idUser = document.querySelector('#idUser').value || '';
@@ -64,10 +64,10 @@ const Login = async (root) => {
 					alert.classList.remove('invisible');
 					break;
 			}
-		} catch (error) {
-			console.error('Error', error);
-		}
-	});
+		});
+	} catch (error) {
+		console.error('Error', error);
+	}
 };
 
 export default Login;
