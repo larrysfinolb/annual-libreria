@@ -1,12 +1,9 @@
-import Searcher from '../templates/Searcher';
 import { getAllBookcases, deleteBookcases } from '../utils/api';
 import hostname from '../utils/hostname';
 import { showSpinner, hideSpinner } from '../utils/spinner';
-import { showAlert, hideAlert } from '../utils/alert';
 
-const BookcasesTable = async (root, token) => {
+const BookTable = async (root, token) => {
 	const view = `
-	<div id="searcherContainer"></div>
 	<table class="table table-sm table-hover col-12">
 		<thead class="table-dark">
 			<tr>
@@ -21,13 +18,7 @@ const BookcasesTable = async (root, token) => {
     `;
 	root.innerHTML = view;
 
-	const tbody = document.querySelector('#tbody');
-	await Searcher(document.querySelector('#searcherContainer'), tbody);
-
 	try {
-		const tableAlert = document.querySelector('#tableAlert');
-
-		hideAlert(tableAlert);
 		showSpinner();
 		let result = await getAllBookcases(token);
 		hideSpinner();
@@ -44,26 +35,20 @@ const BookcasesTable = async (root, token) => {
 						</tr>
 					`;
 				}).join('');
-				tbody.innerHTML = html;
-
-				buildModal(tbody, result, token);
+				document.querySelector('#tbody').innerHTML = html;
+				buildModal(result);
 				break;
 			case -101:
 				window.localStorage.removeItem('token');
 				window.location.href = `${hostname}/#login`;
 				break;
-			case 500:
-				showAlert(tableAlert, 'Ups! Algo ha pasado entre el Cliente y el Servidor.', 'danger');
-				break;
-			default:
-				console.log(result);
 		}
 	} catch (error) {
 		console.error('Error', error);
 	}
 };
 
-const buildModal = (tbody, result, token) => {
+const buildModal = (result) => {
 	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
 		tr.addEventListener('click', () => {
 			const modal = document.querySelector('#modal');
@@ -81,7 +66,7 @@ const buildModal = (tbody, result, token) => {
 					<form id="editForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-6">
 							<label for="codigo" class="form-label">Codigo del Estante</label>
-							<input type="text" class="form-control" id="codigo" value="${Codigo}" readonly required>
+							<input type="text" class="form-control" id="codigo" value="${Codigo}" disabled required>
 						</div>
 						<div class="col-sm-6">
 							<label for="activo" class="form-label">Estado del Estante (Activo)</label>
@@ -97,7 +82,6 @@ const buildModal = (tbody, result, token) => {
 					</form>
 					</div>
 					<div class="modal-footer">
-						<div class="alert d-flex align-items-center invisible" role="alert" id="modalAlert"></div>
 						<button type="button" class="btn btn-danger" id="deleteBtnModal">Eliminar</button>
 						<button type="button" class="btn btn-secondary" id="closeBtnModal">Cerrar</button>
 					</div>
@@ -106,14 +90,7 @@ const buildModal = (tbody, result, token) => {
 			`;
 			modal.innerHTML = html;
 
-			const modalAlert = document.querySelector('#modalAlert');
-
-			document.querySelector('#editForm').addEventListener('submit', (e) => {
-				e.preventDefault();
-			});
-
 			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
-				hideAlert(modalAlert);
 				showSpinner();
 				const result = await deleteBookcases(Codigo, token);
 				hideSpinner();
@@ -121,17 +98,9 @@ const buildModal = (tbody, result, token) => {
 				switch (result.Status) {
 					case 0:
 						modal.classList.remove('d-block');
-						tbody.removeChild(tbody.children[index]);
-						break;
-					case -101:
-						window.localStorage.removeItem('token');
-						window.location.href = `${hostname}/#login`;
-						break;
-					case 500:
-						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
+						tr.classList.add('d-none');
 						break;
 					default:
-						console.log(result);
 				}
 			});
 
@@ -142,4 +111,4 @@ const buildModal = (tbody, result, token) => {
 	});
 };
 
-export default BookcasesTable;
+export default BookTable;

@@ -33,10 +33,10 @@ const Login = async (root) => {
 	root.innerHTML = view;
 
 	try {
+		const alert = document.querySelector('#alert');
+
 		document.querySelector('#loginForm').addEventListener('submit', async (e) => {
 			e.preventDefault();
-
-			const alert = document.querySelector('#alert');
 
 			const idUser = document.querySelector('#idUser').value || '';
 			const password = document.querySelector('#password').value || '';
