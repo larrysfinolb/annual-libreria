@@ -1,5 +1,5 @@
 import Searcher from '../templates/Searcher';
-import { getAllBookcases, deleteBookcases } from '../utils/api';
+import { getAllBookcases, deleteBookcases, updateBookcases } from '../utils/api';
 import hostname from '../utils/hostname';
 import { showSpinner, hideSpinner } from '../utils/spinner';
 import { showAlert, hideAlert } from '../utils/alert';
@@ -46,7 +46,7 @@ const BookcasesTable = async (root, token) => {
 				}).join('');
 				tbody.innerHTML = html;
 
-				buildModal(tbody, result, token);
+				buildModal(root, token, tbody, result);
 				break;
 			case -101:
 				window.localStorage.removeItem('token');
@@ -63,16 +63,16 @@ const BookcasesTable = async (root, token) => {
 	}
 };
 
-const buildModal = (tbody, result, token) => {
+const buildModal = (root, token, tbody, result) => {
 	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
 		tr.addEventListener('click', () => {
 			const modal = document.querySelector('#modal');
 
 			const row = result.Data[index];
 
-			const Activo = row.Activo || 0;
+			let Activo = row.Activo || 0;
 			const Codigo = row.Codigo || '';
-			const Descripcion = row.Descripcion || '';
+			let Descripcion = row.Descripcion || '';
 
 			const html = `
 			<div class="modal-dialog modal-dialog-centered">
@@ -81,15 +81,15 @@ const buildModal = (tbody, result, token) => {
 					<form id="editForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-6">
 							<label for="codigo" class="form-label">Codigo del Estante</label>
-							<input type="text" class="form-control" id="codigo" value="${Codigo}" readonly required>
+							<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
 						</div>
 						<div class="col-sm-6">
 							<label for="activo" class="form-label">Estado del Estante (Activo)</label>
-							<input type="number" class="form-control" id="activo" step="1" min="0" max="1" value="${Activo}" required>
+							<input type="number" class="form-control" id="activoModal" step="1" min="0" max="1" value="${Activo}" required>
 						</div>
 						<div class="col-12">
 							<label for="descripcion" class="form-label">Descripcion del Estante</label>
-							<input type="text" class="form-control" id="descripcion" value="${Descripcion}" required>
+							<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
 						</div>
 						<div class="col-12">
 							<button class="btn btn-dark w-100" type="submit">Editar</button>
@@ -97,7 +97,7 @@ const buildModal = (tbody, result, token) => {
 					</form>
 					</div>
 					<div class="modal-footer">
-						<div class="alert d-flex align-items-center invisible" role="alert" id="modalAlert"></div>
+						<div class="alert d-flex align-items-center invisible w-100" role="alert" id="modalAlert"></div>
 						<button type="button" class="btn btn-danger" id="deleteBtnModal">Eliminar</button>
 						<button type="button" class="btn btn-secondary" id="closeBtnModal">Cerrar</button>
 					</div>
@@ -105,11 +105,43 @@ const buildModal = (tbody, result, token) => {
 			</div>
 			`;
 			modal.innerHTML = html;
+			modal.classList.add('d-block');
 
 			const modalAlert = document.querySelector('#modalAlert');
 
-			document.querySelector('#editForm').addEventListener('submit', (e) => {
+			document.querySelector('#editForm').addEventListener('submit', async (e) => {
 				e.preventDefault();
+
+				Activo = document.querySelector('#activoModal').value || 0;
+				Descripcion = document.querySelector('#descripcionModal').value || '';
+
+				if (isNaN(Number(Activo))) {
+					showAlert(modalAlert, "El valor del Campo 'Activo' debe ser un numero.", 'danger');
+					throw "El valor del Campo 'Activo' debe ser un numero.";
+				}
+
+				hideAlert(modalAlert);
+				showSpinner();
+				const result = await updateBookcases({ Activo, Codigo, Descripcion }, token);
+				hideSpinner();
+
+				switch (result.Status) {
+					case 0:
+						modal.classList.remove('d-block');
+						return BookcasesTable(root, token);
+					case -97:
+						showAlert(modalAlert, 'Descripcion es un campo obligatorio', 'danger');
+						break;
+					case -101:
+						window.localStorage.removeItem('token');
+						window.location.href = `${hostname}/#login`;
+						break;
+					case 500:
+						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
+						break;
+					default:
+						console.log(result);
+				}
 			});
 
 			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
@@ -121,7 +153,9 @@ const buildModal = (tbody, result, token) => {
 				switch (result.Status) {
 					case 0:
 						modal.classList.remove('d-block');
-						tbody.removeChild(tbody.children[index]);
+						return BookcasesTable(root, token);
+					case -2:
+						showAlert(modalAlert, 'No se puede eliminar, ya que posee existencia en otras entidades', 'danger');
 						break;
 					case -101:
 						window.localStorage.removeItem('token');
@@ -136,8 +170,6 @@ const buildModal = (tbody, result, token) => {
 			});
 
 			document.querySelector('#closeBtnModal').addEventListener('click', () => modal.classList.remove('d-block'));
-
-			modal.classList.add('d-block');
 		});
 	});
 };
