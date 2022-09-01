@@ -1,8 +1,9 @@
-import Searcher from '../templates/Searcher';
+import Searcher from './Searcher';
 import { getAllBookcases, deleteBookcases, updateBookcases } from '../utils/api';
 import hostname from '../utils/hostname';
 import { showSpinner, hideSpinner } from '../utils/spinner';
 import { showAlert, hideAlert } from '../utils/alert';
+import logout from '../utils/logout';
 
 const BookcasesTable = async (root, token) => {
 	const view = `
@@ -46,7 +47,7 @@ const BookcasesTable = async (root, token) => {
 				}).join('');
 				tbody.innerHTML = html;
 
-				buildModal(root, token, tbody, result);
+				buildModal(root, token, result);
 				break;
 			case -101:
 				window.localStorage.removeItem('token');
@@ -63,7 +64,7 @@ const BookcasesTable = async (root, token) => {
 	}
 };
 
-const buildModal = (root, token, tbody, result) => {
+const buildModal = (root, token, result) => {
 	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
 		tr.addEventListener('click', () => {
 			const modal = document.querySelector('#modal');
@@ -133,14 +134,13 @@ const buildModal = (root, token, tbody, result) => {
 						showAlert(modalAlert, 'Descripcion es un campo obligatorio', 'danger');
 						break;
 					case -101:
-						window.localStorage.removeItem('token');
-						window.location.href = `${hostname}/#login`;
+						logout();
 						break;
 					case 500:
 						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
 						break;
 					default:
-						console.log(result);
+						showAlert(modalAlert, result.Message, 'danger');
 				}
 			});
 
@@ -155,17 +155,16 @@ const buildModal = (root, token, tbody, result) => {
 						modal.classList.remove('d-block');
 						return BookcasesTable(root, token);
 					case -2:
-						showAlert(modalAlert, 'No se puede eliminar, ya que posee existencia en otras entidades', 'danger');
+						showAlert(modalAlert, 'No se puede eliminar. Posee existencias.', 'danger');
 						break;
 					case -101:
-						window.localStorage.removeItem('token');
-						window.location.href = `${hostname}/#login`;
+						logout();
 						break;
 					case 500:
 						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
 						break;
 					default:
-						console.log(result);
+						showAlert(modalAlert, result.Message, 'danger');
 				}
 			});
 

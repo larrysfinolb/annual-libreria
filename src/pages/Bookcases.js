@@ -2,9 +2,8 @@ import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
 import BookcasesTable from '../templates/BookcasesTable';
 import { createBookcases } from '../utils/api';
-import { showSpinner, hideSpinner } from '../utils/spinner';
 import { showAlert, hideAlert } from '../utils/alert';
-import hostname from '../utils/hostname';
+import logout from '../utils/logout';
 
 const Bookcases = async (root, token) => {
 	const view = `
@@ -68,25 +67,19 @@ const Bookcases = async (root, token) => {
 				throw "El valor del Campo 'Activo' debe ser un numero.";
 			}
 
-			showSpinner();
 			const result = await createBookcases({ Activo, Codigo, Descripcion }, token);
-			hideSpinner();
 
-			switch (result.Status) {
-				case 0:
-					showAlert(formAlert, 'El Estante ha sido añadido.', 'success');
-					createForm.reset();
-					await BookcasesTable(document.querySelector('#table'), token);
-					break;
-				case -98:
-					showAlert(formAlert, 'El Codigo del Estante ya esta en uso.', 'danger');
-					break;
-				case -101:
-					window.localStorage.removeItem('token');
-					window.location.href = `${hostname}/#login`;
-					break;
-				default:
-					console.log(result);
+			if (result.Status === 0) {
+				showAlert(formAlert, 'El Estante ha sido añadido.', 'success');
+				createForm.reset();
+				await BookcasesTable(document.querySelector('#table'), token);
+			} else if (result.Status === -101) {
+				logout();
+			} else if (result.Status === 500) {
+				showAlert(formAlert, 'Ups! El servidor ha fallado.');
+				console.log(result.Message);
+			} else {
+				showAlert(formAlert, result.Message, 'danger');
 			}
 		});
 	} catch (error) {

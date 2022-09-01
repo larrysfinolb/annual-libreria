@@ -1,7 +1,7 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
 
-const NotFound = async (root) => {
+const Clients = async (root, token) => {
 	const view = `
 	<div id="header" class="sticky-top"></div>
 	<div class="container-fluid">
@@ -18,4 +18,4 @@ const NotFound = async (root) => {
 	await SidebarMenu(document.querySelector('#menu'));
 };
 
-export default NotFound;
+export default Clients;

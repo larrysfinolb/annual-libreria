@@ -1,6 +1,8 @@
 import Home from '../pages/Home';
 import Bookcases from '../pages/Bookcases';
+import InventoryInstances from '../pages/InventoryInstances';
 import Books from '../pages/Books';
+import Clients from '../pages/Clients';
 import Login from '../pages/Login';
 import NotFound from '../pages/NotFound';
 import getRoute from '../utils/getRoute';
@@ -22,10 +24,14 @@ const router = async () => {
 		case '/bookcases':
 			await Bookcases(root, token);
 			break;
+		case '/inventory-instances':
+			await InventoryInstances(root, token);
+			break;
 		case '/books':
 			await Books(root, token);
 			break;
 		case '/clients':
+			await Clients(root, token);
 			break;
 		case '/login':
 			await Login(root);

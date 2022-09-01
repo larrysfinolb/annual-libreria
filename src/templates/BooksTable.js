@@ -1,0 +1,213 @@
+import Searcher from './Searcher';
+import { deleteBooks, getAllBookcases, getAllBooksByBookcases, updateBook } from '../utils/api';
+import logout from '../utils/logout';
+import { showSpinner, hideSpinner } from '../utils/spinner';
+import { hideAlert, showAlert } from '../utils/alert';
+
+const BookTable = async (root, token) => {
+	const view = `
+	<div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
+		<div class="flex-grow-1">
+		<select class="form-select" id="bookcases"></select>
+		</div>
+		<div class="flex-grow-1" id="searcherContainer"></div>
+	</div>
+	<table class="table table-sm table-hover col-12">
+		<thead class="table-dark">
+			<tr>
+				<th scope="col">#</th>
+				<th scope="col">Codigo</th>
+				<th scope="col">Codigo de Instancia</th>
+				<th scope="col">Descripcion</th>
+				<th scope="col">Costo</th>
+			</tr>
+		</thead>
+		<tbody id="tbody"></tbody>
+	</table>
+    `;
+	root.innerHTML = view;
+
+	const tbody = document.querySelector('#tbody');
+	await Searcher(document.querySelector('#searcherContainer'), tbody);
+
+	const bookcases = document.querySelector('#bookcases');
+
+	try {
+		const result = await getAllBookcases(token);
+
+		switch (result.Status) {
+			case 0:
+				const htmlBookcases = result.Data.map((row, index) => {
+					if (index !== 0) {
+						return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
+					} else {
+						return `				
+					<option selected>Selecciona el Estante</option>
+					<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>
+					`;
+					}
+				}).join('');
+				bookcases.innerHTML = htmlBookcases;
+				break;
+			case -101:
+				logout();
+				break;
+			case 500:
+				console.log('Ups! Ha ocurrido algo entre el cliente y el servidor');
+				break;
+			default:
+				console.log(result);
+		}
+
+		bookcases.addEventListener('change', async () => {
+			const result = await getAllBooksByBookcases(bookcases.value, token);
+
+			switch (result.Status) {
+				case 0:
+					const html = result.Data.map((row) => {
+						return `
+							<tr>
+								<th scope="row">${row.Fila}</th>
+								<td>${row.Codigo}</td>
+								<td>${row.CodigoInstancia}</td>
+								<td>${row.Descripcion}</td>
+								<td>${row.CostoActual}</td>
+							</tr>
+						`;
+					}).join('');
+					tbody.innerHTML = html;
+
+					buildModal(root, token, result);
+					break;
+				case -101:
+					logout();
+					break;
+				case 500:
+					console.log('Ups! Algo ha salido mal entre el cliente y el servidor');
+					break;
+				default:
+					console.log(result);
+			}
+		});
+	} catch (error) {
+		console.error('Error', error);
+	}
+};
+
+const buildModal = (root, token, result) => {
+	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
+		tr.addEventListener('click', () => {
+			const modal = document.querySelector('#modal');
+
+			const row = result.Data[index];
+
+			const Codigo = row.Codigo || '';
+			let CodigoInstancia = row.CodigoInstancia || 0;
+			let CostoActual = row.CostoActual || 0;
+			let Descripcion = row.Descripcion || '';
+
+			const html = `
+			<div class="modal-dialog modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-body">
+					<form id="editForm" class="row g-3 w-100 mx-auto">
+						<div class="col-sm-5">
+							<label for="codigo" class="form-label">Codigo del Estante</label>
+							<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
+						</div>
+						<div class="col-sm-7">
+							<label for="codigo" class="form-label">Codigo de la Instancia de Inventario</label>
+							<input type="number" class="form-control" id="codigoInstanciaModal" step="1" value="${CodigoInstancia}" required>
+						</div>
+						<div class="col-12">
+							<label for="activo" class="form-label">Costo del Libro</label>
+							<input type="number" class="form-control" id="costoActualModal" step="0.01" min="0" value="${CostoActual}" required>
+						</div>
+						<div class="col-12">
+							<label for="descripcion" class="form-label">Descripcion del Estante</label>
+							<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
+						</div>
+						<div class="col-12">
+							<button class="btn btn-dark w-100" type="submit">Editar</button>
+						</div>
+					</form>
+					</div>
+					<div class="modal-footer">
+						<div class="alert d-flex align-items-center invisible w-100" role="alert" id="modalAlert"></div>
+						<button type="button" class="btn btn-danger" id="deleteBtnModal">Eliminar</button>
+						<button type="button" class="btn btn-secondary" id="closeBtnModal">Cerrar</button>
+					</div>
+				</div>
+			</div>
+			`;
+			modal.innerHTML = html;
+			modal.classList.add('d-block');
+
+			const modalAlert = document.querySelector('#modalAlert');
+
+			document.querySelector('#editForm').addEventListener('submit', async (e) => {
+				e.preventDefault();
+
+				CodigoInstancia = document.querySelector('#codigoInstanciaModal').value || 0;
+				Descripcion = document.querySelector('#descripcionModal').value || '';
+				CostoActual = document.querySelector('#costoActualModal').value || '';
+
+				if (isNaN(Number(Codigo))) {
+					showAlert(formAlert, "El valor del Campo 'Codigo de Instancia' debe ser un numero.", 'danger');
+					throw "El valor del Campo 'Codigo de Instancia' debe ser un numero.";
+				} else if (isNaN(Number(CostoActual))) {
+					showAlert(formAlert, "El valor del Campo 'Costo' debe ser un numero.", 'danger');
+					throw "El valor del Campo 'Costo' debe ser un numero.";
+				}
+
+				hideAlert(modalAlert);
+				const result = await updateBook({ Codigo, CodigoInstancia, CostoActual, Descripcion }, token);
+
+				switch (result.Status) {
+					case 0:
+						modal.classList.remove('d-block');
+						return BookTable(root, token);
+					case -97:
+						showAlert(modalAlert, 'Ninguna instancia asociada.', 'danger');
+						break;
+					case -98:
+						showAlert(modalAlert, 'Instancia con propiedades distintas al producto.', 'danger');
+						break;
+					case -101:
+						logout();
+						break;
+					case 500:
+						showAlert(modalAlert, 'Ups! Ha ocurrido algo entre el cliente y el servidor', 'danger');
+						break;
+					default:
+						showAlert(modalAlert, result.Message, 'danger');
+				}
+			});
+
+			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
+				hideAlert(modalAlert);
+				const result = await deleteBooks(Codigo, token);
+
+				switch (result.Status) {
+					case 0:
+						modal.classList.remove('d-block');
+						return BookTable(root, token);
+					case -2:
+						showAlert(modalAlert, 'No se puede eliminar. Posee existencias.', 'danger');
+						break;
+					case -101:
+						logout();
+					case 500:
+						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
+						break;
+					default:
+						showAlert(modalAlert, result.Message, 'danger');
+				}
+			});
+
+			document.querySelector('#closeBtnModal').addEventListener('click', () => modal.classList.remove('d-block'));
+		});
+	});
+};
+
+export default BookTable;
