@@ -3,7 +3,7 @@ import SidebarMenu from '../templates/SidebarMenu';
 import BookcasesTable from '../templates/BookcasesTable';
 import { createBookcases } from '../utils/api';
 import { showAlert, hideAlert } from '../utils/alert';
-import logout from '../utils/logout';
+import validateStatus from '../utils/validateStatus';
 
 const Bookcases = async (root, token) => {
 	const view = `
@@ -67,20 +67,14 @@ const Bookcases = async (root, token) => {
 				throw "El valor del Campo 'Activo' debe ser un numero.";
 			}
 
+			hideAlert(formAlert);
 			const result = await createBookcases({ Activo, Codigo, Descripcion }, token);
 
-			if (result.Status === 0) {
+			validateStatus(result, formAlert, async () => {
 				showAlert(formAlert, 'El Estante ha sido añadido.', 'success');
 				createForm.reset();
 				await BookcasesTable(document.querySelector('#table'), token);
-			} else if (result.Status === -101) {
-				logout();
-			} else if (result.Status === 500) {
-				showAlert(formAlert, 'Ups! El servidor ha fallado.');
-				console.log(result.Message);
-			} else {
-				showAlert(formAlert, result.Message, 'danger');
-			}
+			});
 		});
 	} catch (error) {
 		console.error('Error', error);

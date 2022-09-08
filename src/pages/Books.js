@@ -3,7 +3,7 @@ import SidebarMenu from '../templates/SidebarMenu';
 import BooksTable from '../templates/BooksTable';
 import { hideAlert, showAlert } from '../utils/alert';
 import { createBook, getAllInventoryInstances } from '../utils/api';
-import logout from '../utils/logout';
+import validateStatus from '../utils/validateStatus';
 
 const Books = async (root, token) => {
 	const view = `
@@ -60,7 +60,7 @@ const Books = async (root, token) => {
 		hideAlert(formAlert);
 		const result = await getAllInventoryInstances(token);
 
-		if (result.Status === 0) {
+		validateStatus(result, formAlert, () => {
 			const html = result.Data.map((row, index) => {
 				if (index !== 0) {
 					return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
@@ -72,14 +72,7 @@ const Books = async (root, token) => {
 				}
 			}).join('');
 			document.querySelector('#codigoInstancia').innerHTML = html;
-		} else if (result.Status === -101) {
-			logout();
-		} else if (result.Status === 500) {
-			showAlert(formAlert, 'Ups! Algo ha fallado en el servidor.', 'danger');
-			console.log(result.Message);
-		} else {
-			showAlert(formAlert, result.Message, 'danger');
-		}
+		});
 
 		createForm.addEventListener('submit', async (e) => {
 			e.preventDefault();
@@ -97,18 +90,11 @@ const Books = async (root, token) => {
 			hideAlert(formAlert);
 			const result = await createBook({ Codigo, CodigoInstancia, Costo, Descripcion }, token);
 
-			if (result.Status === 0) {
+			validateStatus(result, formAlert, async () => {
 				showAlert(formAlert, 'El Libro ha sido añadido.', 'success');
 				createForm.reset();
 				await BooksTable(document.querySelector('#table'), token);
-			} else if (result.Status === -101) {
-				logout();
-			} else if (result.Status === 500) {
-				showAlert(formAlert, 'Ups! El servidor ha fallado.');
-				console.log(result.Message);
-			} else {
-				showAlert(formAlert, result.Message, 'danger');
-			}
+			});
 		});
 	} catch (error) {
 		console.error('Error', error);

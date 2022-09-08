@@ -16,6 +16,7 @@ export const loginSaint = async (idUser, password) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 
@@ -32,6 +33,7 @@ export const getAllBookcases = async (token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const createBookcases = async (deposito, token) => {
@@ -46,17 +48,22 @@ export const createBookcases = async (deposito, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const updateBookcases = async (deposito, token) => {
 	const URL = `${API}/bookcases/update`;
 
 	try {
+		showSpinner();
 		const result = await axios.post(URL, { deposito, token });
+		hideSpinner();
+
 		return result.data;
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const deleteBookcases = async (codigoDeposito, token) => {
@@ -71,6 +78,7 @@ export const deleteBookcases = async (codigoDeposito, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 
@@ -87,14 +95,15 @@ export const getAllInventoryInstances = async (token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
-export const createInventoryInstance = async (instanciaInventario, token) => {
+export const createInventoryInstance = async (instancia, token) => {
 	const URL = `${API}/inventory-instances/create`;
 
 	try {
 		showSpinner();
-		const result = await axios.post(URL, { instanciaInventario, token });
+		const result = await axios.post(URL, { instancia, token });
 		hideSpinner();
 
 		return result.data;
@@ -103,18 +112,19 @@ export const createInventoryInstance = async (instanciaInventario, token) => {
 		console.log('Error en la API', error);
 	}
 };
-export const updateInventoryInstance = async (instanciaInventario, token) => {
+export const updateInventoryInstance = async (instancia, token) => {
 	const URL = `${API}/inventory-instances/update`;
 
 	try {
 		showSpinner();
-		const result = await axios.post(URL, { instanciaInventario, token });
+		const result = await axios.post(URL, { instancia, token });
 		hideSpinner();
 
 		return result.data;
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const deleteInventoryInstance = async (codigoInstancia, token) => {
@@ -129,6 +139,7 @@ export const deleteInventoryInstance = async (codigoInstancia, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 
@@ -145,6 +156,7 @@ export const getAllBooksByBookcases = async (codigoDeposito, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const createBook = async (producto, token) => {
@@ -159,6 +171,7 @@ export const createBook = async (producto, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const updateBook = async (producto, token) => {
@@ -173,6 +186,7 @@ export const updateBook = async (producto, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const deleteBooks = async (codigoProducto, token) => {
@@ -187,6 +201,7 @@ export const deleteBooks = async (codigoProducto, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 
@@ -203,6 +218,7 @@ export const getAllClients = async (token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const createClient = async (cliente, usuario, token) => {
@@ -217,6 +233,7 @@ export const createClient = async (cliente, usuario, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const updateClient = async (cliente, usuario, token) => {
@@ -231,6 +248,7 @@ export const updateClient = async (cliente, usuario, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };
 export const deleteClient = async (codigoCliente, token) => {
@@ -245,5 +263,6 @@ export const deleteClient = async (codigoCliente, token) => {
 	} catch (error) {
 		hideSpinner();
 		console.log('Error en la API:', error);
+		return error.response.data;
 	}
 };

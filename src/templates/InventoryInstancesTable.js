@@ -1,9 +1,10 @@
-import Searcher from './Searcher';
-import { getAllBookcases, deleteBookcases, updateBookcases } from '../utils/api';
-import { showAlert, hideAlert } from '../utils/alert';
+import { hideAlert, showAlert } from '../utils/alert';
+import { deleteInventoryInstance, getAllInventoryInstances, updateInventoryInstance } from '../utils/api';
+import logout from '../utils/logout';
 import validateStatus from '../utils/validateStatus';
+import Searcher from './Searcher';
 
-const BookcasesTable = async (root, token) => {
+const InventoryInstancesTable = async (root, token) => {
 	const view = `
 	<div id="searcherContainer"></div>
 	<table class="table table-sm table-hover col-12">
@@ -12,7 +13,7 @@ const BookcasesTable = async (root, token) => {
 				<th scope="col">#</th>
 				<th scope="col">Codigo</th>
 				<th scope="col">Descripcion</th>
-				<th scope="col">Activo</th>
+				<th scope="col">Cantidad de Productos</th>
 			</tr>
 		</thead>
 		<tbody id="tbody"></tbody>
@@ -27,60 +28,62 @@ const BookcasesTable = async (root, token) => {
 		const tableAlert = document.querySelector('#tableAlert');
 
 		hideAlert(tableAlert);
-		let result = await getAllBookcases(token);
+		let result = await getAllInventoryInstances(token);
 
-		validateStatus(result, tableAlert, () => {
-			const html = result.Data.map((row) => {
-				return `
-					<tr>
-						<th scope="row">${row.Fila}</th>
-						<td>${row.Codigo}</td>
-						<td>${row.Descripcion}</td>
-						<td>${row.Activo}</td>
-					</tr>
-				`;
-			}).join('');
-			tbody.innerHTML = html;
-
-			buildModal(root, token, result);
-		});
+		if (result.Status === 0) {
+			buildTable(root, token, tbody, result);
+		} else if (result.Status === -101) {
+			logout();
+		} else if (result.Status === 500) {
+			showAlert(tableAlert, 'Ups! Algo ha fallado en el servidor.', 'danger');
+			console.log(result.Message);
+		} else {
+			showAlert(tableAlert, result.Message, 'danger');
+		}
 	} catch (error) {
 		console.error('Error', error);
 	}
 };
 
-const buildModal = (root, token, result) => {
+const buildTable = async (root, token, tbody, result) => {
+	const html = result.Data.map((row) => {
+		return `
+		<tr>
+			<th scope="row">${row.Fila}</th>
+			<td>${row.Codigo}</td>
+			<td>${row.Descripcion}</td>
+			<td>${row.CantidadProductos}</td>
+		</tr>
+		`;
+	}).join('');
+	tbody.innerHTML = html;
+
 	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
 		tr.addEventListener('click', () => {
 			const modal = document.querySelector('#modal');
 
 			const row = result.Data[index];
 
-			let Activo = row.Activo || 0;
-			const Codigo = row.Codigo || '';
+			const Codigo = row.Codigo || 0;
 			let Descripcion = row.Descripcion || '';
 
 			const html = `
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-body">
-					<form id="editForm" class="row g-3 w-100 mx-auto">
-						<div class="col-sm-6">
-							<label for="codigoModal" class="form-label">Codigo del Estante</label>
-							<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
-						</div>
-						<div class="col-sm-6">
-							<label for="activoModal" class="form-label">Estado del Estante (Activo)</label>
-							<input type="number" class="form-control" id="activoModal" step="1" min="0" max="1" value="${Activo}" required>
-						</div>
-						<div class="col-12">
-							<label for="descripcionModal" class="form-label">Descripcion del Estante</label>
-							<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
-						</div>
-						<div class="col-12">
-							<button class="btn btn-dark w-100" type="submit">Editar</button>
-						</div>
-					</form>
+						<form id="editForm" class="row g-3 w-100 mx-auto">
+							<div class="col-12">
+								<label for="codigoModal" class="form-label">Codigo de la Instancia de Inventario</label>
+								<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
+							</div>
+							<div class="col-12">
+								<label for="descripcionModal" class="form-label">Descripcion de la Instancia de Inventario</label>
+								<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
+							</div>
+							<div class="col-12">
+								<button class="btn btn-dark w-100" type="submit">Editar</button>
+							</div>
+						</form>
 					</div>
 					<div class="modal-footer">
 						<div class="alert d-flex align-items-center invisible w-100" role="alert" id="alertModal"></div>
@@ -98,30 +101,24 @@ const buildModal = (root, token, result) => {
 			document.querySelector('#editForm').addEventListener('submit', async (e) => {
 				e.preventDefault();
 
-				Activo = document.querySelector('#activoModal').value || 0;
 				Descripcion = document.querySelector('#descripcionModal').value || '';
 
-				if (isNaN(Number(Activo))) {
-					showAlert(alertModal, "El valor del Campo 'Activo' debe ser un numero.", 'danger');
-					throw "El valor del Campo 'Activo' debe ser un numero.";
-				}
-
 				hideAlert(alertModal);
-				const result = await updateBookcases({ Activo, Codigo, Descripcion }, token);
+				let result = await updateInventoryInstance({ Codigo, Descripcion }, token);
 
 				validateStatus(result, alertModal, async () => {
 					modal.classList.remove('d-block');
-					return BookcasesTable(root, token);
+					return InventoryInstancesTable(root, token);
 				});
 			});
 
 			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
 				hideAlert(alertModal);
-				const result = await deleteBookcases(Codigo, token);
+				let result = await deleteInventoryInstance(Codigo, token);
 
 				validateStatus(result, alertModal, async () => {
 					modal.classList.remove('d-block');
-					return BookcasesTable(root, token);
+					return InventoryInstancesTable(root, token);
 				});
 			});
 
@@ -130,4 +127,4 @@ const buildModal = (root, token, result) => {
 	});
 };
 
-export default BookcasesTable;
+export default InventoryInstancesTable;

@@ -1,6 +1,7 @@
 import { loginSaint } from '../utils/api';
 import { showAlert, hideAlert } from '../utils/alert';
 import hostname from '../utils/hostname';
+import validateStatus from '../utils/validateStatus';
 
 const Login = async (root) => {
 	const view = `
@@ -39,15 +40,10 @@ const Login = async (root) => {
 			hideAlert(alert);
 			const result = await loginSaint(idUser, password);
 
-			if (result.Status === 0) {
+			validateStatus(result, alert, () => {
 				window.localStorage.setItem('token', result.Message);
 				window.location.href = `${hostname}/#`;
-			} else if (result.Status === 500) {
-				showAlert('Ups! El servidor ha fallado.');
-				console.log(result.Message);
-			} else {
-				showAlert(alert, result.Message, 'danger');
-			}
+			});
 		});
 	} catch (error) {
 		console.error('Error', error);

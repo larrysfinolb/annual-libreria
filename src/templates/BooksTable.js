@@ -1,8 +1,7 @@
 import Searcher from './Searcher';
 import { deleteBooks, getAllBookcases, getAllBooksByBookcases, updateBook } from '../utils/api';
-import logout from '../utils/logout';
-import { showSpinner, hideSpinner } from '../utils/spinner';
 import { hideAlert, showAlert } from '../utils/alert';
+import validateStatus from '../utils/validateStatus';
 
 const BookTable = async (root, token) => {
 	const view = `
@@ -35,59 +34,39 @@ const BookTable = async (root, token) => {
 	try {
 		const result = await getAllBookcases(token);
 
-		switch (result.Status) {
-			case 0:
-				const htmlBookcases = result.Data.map((row, index) => {
-					if (index !== 0) {
-						return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
-					} else {
-						return `				
-					<option selected>Selecciona el Estante</option>
-					<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>
-					`;
-					}
-				}).join('');
-				bookcases.innerHTML = htmlBookcases;
-				break;
-			case -101:
-				logout();
-				break;
-			case 500:
-				console.log('Ups! Ha ocurrido algo entre el cliente y el servidor');
-				break;
-			default:
-				console.log(result);
-		}
+		validateStatus(result, null, () => {
+			const htmlBookcases = result.Data.map((row, index) => {
+				if (index !== 0) {
+					return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
+				} else {
+					return `				
+				<option selected>Selecciona el Estante</option>
+				<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>
+				`;
+				}
+			}).join('');
+			bookcases.innerHTML = htmlBookcases;
+		});
 
 		bookcases.addEventListener('change', async () => {
 			const result = await getAllBooksByBookcases(bookcases.value, token);
 
-			switch (result.Status) {
-				case 0:
-					const html = result.Data.map((row) => {
-						return `
-							<tr>
-								<th scope="row">${row.Fila}</th>
-								<td>${row.Codigo}</td>
-								<td>${row.CodigoInstancia}</td>
-								<td>${row.Descripcion}</td>
-								<td>${row.CostoActual}</td>
-							</tr>
-						`;
-					}).join('');
-					tbody.innerHTML = html;
+			validateStatus(result, null, () => {
+				const html = result.Data.map((row) => {
+					return `
+						<tr>
+							<th scope="row">${row.Fila}</th>
+							<td>${row.Codigo}</td>
+							<td>${row.CodigoInstancia}</td>
+							<td>${row.Descripcion}</td>
+							<td>${row.CostoActual}</td>
+						</tr>
+					`;
+				}).join('');
+				tbody.innerHTML = html;
 
-					buildModal(root, token, result);
-					break;
-				case -101:
-					logout();
-					break;
-				case 500:
-					console.log('Ups! Algo ha salido mal entre el cliente y el servidor');
-					break;
-				default:
-					console.log(result);
-			}
+				buildModal(root, token, result);
+			});
 		});
 	} catch (error) {
 		console.error('Error', error);
@@ -163,46 +142,20 @@ const buildModal = (root, token, result) => {
 				hideAlert(modalAlert);
 				const result = await updateBook({ Codigo, CodigoInstancia, CostoActual, Descripcion }, token);
 
-				switch (result.Status) {
-					case 0:
-						modal.classList.remove('d-block');
-						return BookTable(root, token);
-					case -97:
-						showAlert(modalAlert, 'Ninguna instancia asociada.', 'danger');
-						break;
-					case -98:
-						showAlert(modalAlert, 'Instancia con propiedades distintas al producto.', 'danger');
-						break;
-					case -101:
-						logout();
-						break;
-					case 500:
-						showAlert(modalAlert, 'Ups! Ha ocurrido algo entre el cliente y el servidor', 'danger');
-						break;
-					default:
-						showAlert(modalAlert, result.Message, 'danger');
-				}
+				validateStatus(result, modalAlert, async () => {
+					modal.classList.remove('d-block');
+					return await BookTable(root, token);
+				});
 			});
 
 			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
 				hideAlert(modalAlert);
 				const result = await deleteBooks(Codigo, token);
 
-				switch (result.Status) {
-					case 0:
-						modal.classList.remove('d-block');
-						return BookTable(root, token);
-					case -2:
-						showAlert(modalAlert, 'No se puede eliminar. Posee existencias.', 'danger');
-						break;
-					case -101:
-						logout();
-					case 500:
-						showAlert(modalAlert, 'Ups! Algo ha ocurrido entre el cliente y el servidor.', 'danger');
-						break;
-					default:
-						showAlert(modalAlert, result.Message, 'danger');
-				}
+				validateStatus(result, modalAlert, async () => {
+					modal.classList.remove('d-block');
+					return await BookTable(root, token);
+				});
 			});
 
 			document.querySelector('#closeBtnModal').addEventListener('click', () => modal.classList.remove('d-block'));
