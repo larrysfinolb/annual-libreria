@@ -1,6 +1,9 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
-import ClientsTabble from '../templates/ClientsTable';
+import ClientsTable from '../templates/ClientsTable';
+import { hideAlert, showAlert } from '../utils/alert';
+import validateStatus from '../utils/validateStatus';
+import { createClient } from '../utils/api';
 
 const Clients = async (root, token) => {
 	const view = `
@@ -13,6 +16,31 @@ const Clients = async (root, token) => {
 					<h2 class="h1">Clientes</h2>
 				</div>
 				<section class="d-flex flex-column gap-2">
+					<h3 class="h2">Añade un Nuevo Estante</h3>
+					<form id="createForm" class="row g-3 w-100 mx-auto">
+						<div class="col-sm-6">
+							<label for="codigo" class="form-label">Código del Cliente</label>
+							<input type="text" class="form-control" id="codigo" required>
+						</div>
+						<div class="col-sm-6">
+							<label for="activo" class="form-label">Estado del Estante (Activo)</label>
+							<input type="number" class="form-control" id="activo" step="1" min="0" max="1" required>
+						</div>
+						<div class="col-sm-6">
+							<label for="descripcion" class="form-label">Nombre del Cliente</label>
+							<input type="text" class="form-control" id="descripcion" required>
+						</div>
+						<div class="col-sm-6">
+							<label for="idfiscal" class="form-label">ID Fiscal del Cliente</label>
+							<input type="text" class="form-control" id="idfiscal" required>
+						</div>
+						<div class="col-12">
+							<button class="btn btn-dark w-100" type="submit">Añadir</button>
+						</div>
+						<div class="alert d-flex align-items-center invisible" role="alert" id="formAlert"></div>
+					</form>
+				</section>
+				<section class="d-flex flex-column gap-2">
 					<h3 class="h2">Lista de Todos los Clientes</h3>
 					<div class="table-responsive" id="table"></div>
 					<div class="alert d-flex align-items-center invisible" role="alert" id="tableAlert"></div>
@@ -24,7 +52,37 @@ const Clients = async (root, token) => {
 	root.innerHTML = view;
 	await Header(document.querySelector('#header'));
 	await SidebarMenu(document.querySelector('#menu'));
-	await ClientsTabble(document.querySelector('#table'), token);
+	await ClientsTable(document.querySelector('#table'), token);
+
+	try {
+		const formAlert = document.querySelector('#formAlert');
+		const createForm = document.querySelector('#createForm');
+
+		createForm.addEventListener('submit', async (e) => {
+			e.preventDefault();
+
+			const Activo = document.querySelector('#activo').value || 0;
+			const Codigo = document.querySelector('#codigo').value || '';
+			const Descripcion = document.querySelector('#descripcion').value || '';
+			const IDFiscal = document.querySelector('#idfiscal').value || '';
+
+			if (isNaN(Number(Activo))) {
+				showAlert(formAlert, "El valor del Campo 'Activo' debe ser un número.", 'danger');
+				throw "El valor del Campo 'Activo' debe ser un número.";
+			}
+
+			hideAlert(formAlert);
+			const result = await createClient({ Activo, Codigo, Descripcion, IDFiscal }, {}, token);
+
+			validateStatus(result, formAlert, async () => {
+				showAlert(formAlert, 'El Cliente ha sido añadido.', 'success');
+				createForm.reset();
+				await ClientsTable(document.querySelector('#table'), token);
+			});
+		});
+	} catch (error) {
+		console.error('Error', error);
+	}
 };
 
 export default Clients;

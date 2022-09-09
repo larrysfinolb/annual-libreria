@@ -9,9 +9,9 @@ const Login = async (root) => {
         <main class="row shadow w-100 rounded bg-light overflow-hidden" style="max-width: 750px">
             <div class="col-12 col-sm-6 bg-login"></div>
             <form id="loginForm" class="col-12 col-sm-6">
-                <h2 class="h2 fw-bold text-center py-3 py-sm-5">Bienvenido a Annual Libreria</h2>
+                <h2 class="h2 fw-bold text-center py-3 py-sm-5">Inicia Sesión en Annual Librería</h2>
                 <div class="mb-4">
-                    <label for="idUser" class="form-label">Correo Electronico Asociado</label>
+                    <label for="idUser" class="form-label">Correo Electrónico Asociado</label>
                     <input type="email" id="idUser" class="form-control" required>
                 </div>
                 <div class="mb-4">

@@ -1,17 +1,17 @@
 import Searcher from './Searcher';
-import { hideAlert } from '../utils/alert';
-import { deleteClient, getAllClients } from '../utils/api';
+import { hideAlert, showAlert } from '../utils/alert';
+import { deleteClient, getAllClients, updateClient } from '../utils/api';
 import validateStatus from '../utils/validateStatus';
 
-const ClientsTabble = async (root, token) => {
+const ClientsTable = async (root, token) => {
 	const view = `
     <div id="searcherContainer"></div>
 	<table class="table table-sm table-hover col-12">
 		<thead class="table-dark">
 			<tr>
 				<th scope="col">#</th>
-				<th scope="col">Codigo</th>
-				<th scope="col">Descripcion</th>
+				<th scope="col">Código</th>
+				<th scope="col">Descripción</th>
 				<th scope="col">ID Fiscal</th>
 				<th scope="col">Activo</th>
 			</tr>
@@ -68,19 +68,22 @@ const buildTable = async (root, token, tbody, result) => {
 						<form id="editForm" class="row g-3 w-100 mx-auto">
 							<div class="col-12 col-sm-6">
 								<label for="activoModal">Estado (Activo)</label>
-								<input type="number" class="form-control" id="activoModal" value="${Activo}" readonly required>
+								<input type="number" class="form-control" id="activoModal" min="0" max="1" step="1" value="${Activo}" required>
 							</div>
 							<div class="col-12 col-sm-6">
-								<label for="codigoModal">Codigo del Cliente</label>
+								<label for="codigoModal">Código del Cliente</label>
 								<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
 							</div>
 							<div class="col-12">
-								<label for="descripcionModal">Descripcion del Cliente</label>
-								<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" readonly required>
+								<label for="descripcionModal">Descripción del Cliente</label>
+								<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
 							</div>
 							<div class="col-12">
 								<label for="idFiscalModal">ID Fiscal</label>
-								<input type="text" class="form-control" id="idFiscalModal" value="${IDFiscal}" readonly required>
+								<input type="text" class="form-control" id="idFiscalModal" value="${IDFiscal}" required>
+							</div>
+							<div class="col-12">
+								<button class="btn btn-dark w-100" type="submit">Editar</button>
 							</div>
 						</form>
 					</div>
@@ -97,13 +100,34 @@ const buildTable = async (root, token, tbody, result) => {
 
 			const alertModal = document.querySelector('#alertModal');
 
+			document.querySelector('#editForm').addEventListener('submit', async (e) => {
+				e.preventDefault();
+
+				Activo = document.querySelector('#activoModal').value || 0;
+				Descripcion = document.querySelector('#descripcionModal').value || '';
+				IDFiscal = document.querySelector('#idFiscalModal').value || '';
+
+				if (isNaN(Number(Activo))) {
+					showAlert(alertModal, "El valor del Campo 'Activo' debe ser un número.", 'danger');
+					throw "El valor del Campo 'Activo' debe ser un número.";
+				}
+
+				hideAlert(alertModal);
+				const result = await updateClient({ Activo, Codigo, Descripcion, IDFiscal }, {}, token);
+
+				validateStatus(result, alertModal, async () => {
+					modal.classList.remove('d-block');
+					return ClientsTable(root, token);
+				});
+			});
+
 			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
 				hideAlert(alertModal);
 				const result = await deleteClient(Codigo, token);
 
 				validateStatus(result, alertModal, () => {
 					modal.classList.remove('d-block');
-					return ClientsTabble(root, token);
+					return ClientsTable(root, token);
 				});
 			});
 
@@ -112,4 +136,4 @@ const buildTable = async (root, token, tbody, result) => {
 	});
 };
 
-export default ClientsTabble;
+export default ClientsTable;

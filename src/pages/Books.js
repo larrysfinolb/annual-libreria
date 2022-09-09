@@ -19,7 +19,7 @@ const Books = async (root, token) => {
 					<h3 class="h2">Añade un Nuevo Libro</h3>
 					<form id="createForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-6">
-							<label for="codigo" class="form-label">Codigo del Estante</label>
+							<label for="codigo" class="form-label">Código del Libro</label>
 							<input type="text" id="codigo" class="form-control" required>
 						</div>
 						<div class="col-sm-6">
@@ -27,7 +27,7 @@ const Books = async (root, token) => {
 							<select class="form-select" id="codigoInstancia"></select>
 						</div>
 						<div class="col-sm-6">
-							<label for="descripcion" class="form-label">Descripcion del Libro</label>
+							<label for="descripcion" class="form-label">Descripción del Libro</label>
 							<input type="text" id="descripcion" class="form-control" required>
 						</div>
 						<div class="col-sm-6">

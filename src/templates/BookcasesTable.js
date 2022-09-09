@@ -10,8 +10,8 @@ const BookcasesTable = async (root, token) => {
 		<thead class="table-dark">
 			<tr>
 				<th scope="col">#</th>
-				<th scope="col">Codigo</th>
-				<th scope="col">Descripcion</th>
+				<th scope="col">Código</th>
+				<th scope="col">Descripción</th>
 				<th scope="col">Activo</th>
 			</tr>
 		</thead>
@@ -66,7 +66,7 @@ const buildModal = (root, token, result) => {
 					<div class="modal-body">
 					<form id="editForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-6">
-							<label for="codigoModal" class="form-label">Codigo del Estante</label>
+							<label for="codigoModal" class="form-label">Código del Estante</label>
 							<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
 						</div>
 						<div class="col-sm-6">
@@ -74,7 +74,7 @@ const buildModal = (root, token, result) => {
 							<input type="number" class="form-control" id="activoModal" step="1" min="0" max="1" value="${Activo}" required>
 						</div>
 						<div class="col-12">
-							<label for="descripcionModal" class="form-label">Descripcion del Estante</label>
+							<label for="descripcionModal" class="form-label">Descripción del Estante</label>
 							<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
 						</div>
 						<div class="col-12">
@@ -102,8 +102,8 @@ const buildModal = (root, token, result) => {
 				Descripcion = document.querySelector('#descripcionModal').value || '';
 
 				if (isNaN(Number(Activo))) {
-					showAlert(alertModal, "El valor del Campo 'Activo' debe ser un numero.", 'danger');
-					throw "El valor del Campo 'Activo' debe ser un numero.";
+					showAlert(alertModal, "El valor del Campo 'Activo' debe ser un número.", 'danger');
+					throw "El valor del Campo 'Activo' debe ser un número.";
 				}
 
 				hideAlert(alertModal);

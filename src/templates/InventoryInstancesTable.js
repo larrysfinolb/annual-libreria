@@ -11,8 +11,8 @@ const InventoryInstancesTable = async (root, token) => {
 		<thead class="table-dark">
 			<tr>
 				<th scope="col">#</th>
-				<th scope="col">Codigo</th>
-				<th scope="col">Descripcion</th>
+				<th scope="col">Código</th>
+				<th scope="col">Descripción</th>
 				<th scope="col">Cantidad de Productos</th>
 			</tr>
 		</thead>
@@ -30,16 +30,9 @@ const InventoryInstancesTable = async (root, token) => {
 		hideAlert(tableAlert);
 		let result = await getAllInventoryInstances(token);
 
-		if (result.Status === 0) {
+		validateStatus(result, tableAlert, async () => {
 			buildTable(root, token, tbody, result);
-		} else if (result.Status === -101) {
-			logout();
-		} else if (result.Status === 500) {
-			showAlert(tableAlert, 'Ups! Algo ha fallado en el servidor.', 'danger');
-			console.log(result.Message);
-		} else {
-			showAlert(tableAlert, result.Message, 'danger');
-		}
+		});
 	} catch (error) {
 		console.error('Error', error);
 	}
@@ -73,11 +66,11 @@ const buildTable = async (root, token, tbody, result) => {
 					<div class="modal-body">
 						<form id="editForm" class="row g-3 w-100 mx-auto">
 							<div class="col-12">
-								<label for="codigoModal" class="form-label">Codigo de la Instancia de Inventario</label>
+								<label for="codigoModal" class="form-label">Código de la Instancia de Inventario</label>
 								<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
 							</div>
 							<div class="col-12">
-								<label for="descripcionModal" class="form-label">Descripcion de la Instancia de Inventario</label>
+								<label for="descripcionModal" class="form-label">Descripción de la Instancia de Inventario</label>
 								<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
 							</div>
 							<div class="col-12">

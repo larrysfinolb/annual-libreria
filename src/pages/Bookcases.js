@@ -19,7 +19,7 @@ const Bookcases = async (root, token) => {
 					<h3 class="h2">Añade un Nuevo Estante</h3>
 					<form id="createForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-6">
-							<label for="codigo" class="form-label">Codigo del Estante</label>
+							<label for="codigo" class="form-label">Código del Estante</label>
 							<input type="text" class="form-control" id="codigo" required>
 						</div>
 						<div class="col-sm-6">
@@ -27,7 +27,7 @@ const Bookcases = async (root, token) => {
 							<input type="number" class="form-control" id="activo" step="1" min="0" max="1" required>
 						</div>
 						<div class="col-12">
-							<label for="descripcion" class="form-label">Descripcion del Estante</label>
+							<label for="descripcion" class="form-label">Descripción del Estante</label>
 							<input type="text" class="form-control" id="descripcion" required>
 						</div>
 						<div class="col-12">
@@ -55,7 +55,6 @@ const Bookcases = async (root, token) => {
 		const createForm = document.querySelector('#createForm');
 
 		createForm.addEventListener('submit', async (e) => {
-			hideAlert(formAlert);
 			e.preventDefault();
 
 			const Activo = document.querySelector('#activo').value || 0;
@@ -63,8 +62,8 @@ const Bookcases = async (root, token) => {
 			const Descripcion = document.querySelector('#descripcion').value || '';
 
 			if (isNaN(Number(Activo))) {
-				showAlert(formAlert, "El valor del Campo 'Activo' debe ser un numero.", 'danger');
-				throw "El valor del Campo 'Activo' debe ser un numero.";
+				showAlert(formAlert, "El valor del Campo 'Activo' debe ser un número.", 'danger');
+				throw "El valor del Campo 'Activo' debe ser un número.";
 			}
 
 			hideAlert(formAlert);

@@ -16,10 +16,10 @@ const InventoryInstances = async (root, token) => {
 					<h2 class="h1">Instancias de Inventario</h2>
 				</div>
 				<section class="d-flex flex-column gap-2">
-					<h3 class="h2">Crea una nueva Instancia de Inventario</h3>
+					<h3 class="h2">Añade una nueva Instancia de Inventario</h3>
 					<form id="createForm" class="row g-3 w-100 mx-auto">
 						<div class="col-12">
-							<label for="descripcion" class="form-label">Descripcion de la Instancia de Inventario</label>
+							<label for="descripcion" class="form-label">Descripción de la Instancia de Inventario</label>
 							<input type="text" class="form-control" id="descripcion" required>
 						</div>
 						<div class="col-12">

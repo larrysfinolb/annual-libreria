@@ -15,9 +15,9 @@ const BookTable = async (root, token) => {
 		<thead class="table-dark">
 			<tr>
 				<th scope="col">#</th>
-				<th scope="col">Codigo</th>
-				<th scope="col">Codigo de Instancia</th>
-				<th scope="col">Descripcion</th>
+				<th scope="col">Código</th>
+				<th scope="col">Código de Instancia</th>
+				<th scope="col">Descripción</th>
 				<th scope="col">Costo</th>
 			</tr>
 		</thead>
@@ -91,19 +91,19 @@ const buildModal = (root, token, result) => {
 					<div class="modal-body">
 					<form id="editForm" class="row g-3 w-100 mx-auto">
 						<div class="col-sm-5">
-							<label for="codigo" class="form-label">Codigo del Estante</label>
+							<label for="codigo" class="form-label">Código del Estante</label>
 							<input type="text" class="form-control" id="codigoModal" value="${Codigo}" readonly required>
 						</div>
 						<div class="col-sm-7">
-							<label for="codigo" class="form-label">Codigo de la Instancia de Inventario</label>
+							<label for="codigo" class="form-label">Código de la Instancia de Inventario</label>
 							<input type="number" class="form-control" id="codigoInstanciaModal" step="1" value="${CodigoInstancia}" required>
 						</div>
 						<div class="col-12">
 							<label for="activo" class="form-label">Costo del Libro</label>
-							<input type="number" class="form-control" id="costoActualModal" step="0.01" min="0" value="${CostoActual}" required>
+							<input type="number" class="form-control" id="costoActualModal" step="0.0001" min="0" value="${CostoActual}" required>
 						</div>
 						<div class="col-12">
-							<label for="descripcion" class="form-label">Descripcion del Estante</label>
+							<label for="descripcion" class="form-label">Descripción del Estante</label>
 							<input type="text" class="form-control" id="descripcionModal" value="${Descripcion}" required>
 						</div>
 						<div class="col-12">
@@ -129,14 +129,14 @@ const buildModal = (root, token, result) => {
 
 				CodigoInstancia = document.querySelector('#codigoInstanciaModal').value || 0;
 				Descripcion = document.querySelector('#descripcionModal').value || '';
-				CostoActual = document.querySelector('#costoActualModal').value || '';
+				CostoActual = document.querySelector('#costoActualModal').value || 0;
 
-				if (isNaN(Number(Codigo))) {
-					showAlert(formAlert, "El valor del Campo 'Codigo de Instancia' debe ser un numero.", 'danger');
-					throw "El valor del Campo 'Codigo de Instancia' debe ser un numero.";
+				if (isNaN(Number(CodigoInstancia))) {
+					showAlert(formAlert, "El valor del Campo 'Código de Instancia' debe ser un número.", 'danger');
+					throw "El valor del Campo 'Código de Instancia' debe ser un número.";
 				} else if (isNaN(Number(CostoActual))) {
-					showAlert(formAlert, "El valor del Campo 'Costo' debe ser un numero.", 'danger');
-					throw "El valor del Campo 'Costo' debe ser un numero.";
+					showAlert(formAlert, "El valor del Campo 'Costo' debe ser un número.", 'danger');
+					throw "El valor del Campo 'Costo' debe ser un número.";
 				}
 
 				hideAlert(modalAlert);
