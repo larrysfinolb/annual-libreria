@@ -1,14 +1,10 @@
-const Alert = async (props, parent) => {
-  const div = document.createElement('div');
-  div.classList.add('alert');
-  div.classList.add(`alert-${props.type}`);
-  div.classList.add('d-flex');
-  div.classList.add('align-items-center');
-  div.classList.add('d-none');
-  div.id = props.id;
-  div.setAttribute('role', 'alert');
+const Alert = async ({ id, style }) => {
+  const alert = document.createElement('div');
+  alert.id = id;
+  alert.setAttribute('role', 'alert');
+  alert.className = `alert alert-${style} invisible`;
 
-  parent.append(div);
+  return alert;
 };
 
 export { Alert };

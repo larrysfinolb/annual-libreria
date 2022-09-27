@@ -22,7 +22,11 @@ const Bookcases = async (root, token) => {
 	</div>
     `;
   root.innerHTML = view;
+
+  let props = {};
+
   const section = document.querySelector('#section');
+  const allNodes = [];
 
   await Header(document.querySelector('#header'));
   await SidebarMenu(document.querySelector('#menu'));
@@ -34,15 +38,21 @@ const Bookcases = async (root, token) => {
   ];
   await HeaderContent({ title: 'Estantes', inputs }, section);
 
-  await Alert({ type: 'danger', id: 'tableAlert' }, section);
+  // Creamos la alerta de error
+  props = { id: 'alert', style: 'danger' };
+  const alert = await Alert(props);
+  allNodes.push(alert);
 
+  // Creamos la tabla
   const bookcases = await getAllBookcases(token);
-  const tableAlert = document.querySelector('#tableAlert');
-  validateStatus(
-    bookcases,
-    tableAlert,
-    async () => await Table({ cols: ['Código', 'Descripción', 'Activo'], rows: bookcases.Data }, section)
-  );
+  const newBookcases = bookcases.Data.map(bookcase => {
+    return { Fila: bookcase.Fila, ...bookcase };
+  });
+
+  props = { cols: ['#', 'Código', 'Descripción', 'Activo'], rows: newBookcases };
+  allNodes.push(Table(props));
+
+  section.append(...allNodes);
 
   // try {
   //   const formAlert = document.querySelector('#formAlert');
