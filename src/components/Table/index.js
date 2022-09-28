@@ -1,6 +1,6 @@
-import { Input } from '../Input';
+import { RowEvent } from './events';
 
-const Table = ({ cols, rows }) => {
+const Table = ({ cols, rows }, callBacks, token) => {
   // div.innerHTML = `
   //   <div class="d-flex mb-2">
   //     ${!props.select ? '' : `s`}
@@ -39,34 +39,17 @@ const Table = ({ cols, rows }) => {
     const allTd = [];
     for (const col in row) {
       const td = document.createElement('td');
-      td.textContent = row[col];
+      if (col !== 'Activo') {
+        td.textContent = row[col];
+      } else {
+        td.textContent = row[col] === 0 ? 'No' : 'Si';
+      }
       allTd.push(td);
     }
     tr.append(...allTd);
-    // Evento de cada fila
-    tr.addEventListener('click', () => {
-      const form = document.createElement('form');
-      form.className = 'row';
 
-      const allInputs = cols.map(col => {
-        let type = '';
-        let id = '';
-        if (col !== '#') {
-          type = 'text';
-          id = col.toLowerCase();
-        } else {
-          type = 'number';
-          id = 'fila';
-        }
-        const props = { labelValue: col, inputValue: row[col], type, id, col: 6 };
-        return Input(props);
-      });
-      form.append(...allInputs);
-
-      const modal = document.querySelector('#modal');
-      modal.querySelector('.modal-body').replaceChildren(form);
-      modal.classList.add('d-block');
-    });
+    const props = { tr, row };
+    RowEvent(props, callBacks, token);
 
     return tr;
   });
@@ -81,7 +64,6 @@ const Table = ({ cols, rows }) => {
   const wrap = document.createElement('div');
   wrap.append(container, table);
 
-  // EVENTOS
   // Evento del Buscador
   searcher.addEventListener('keyup', () => {
     const value = searcher.value.toLowerCase();

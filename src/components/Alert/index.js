@@ -1,4 +1,4 @@
-const Alert = async ({ id, style }) => {
+const Alert = ({ id, style }) => {
   const alert = document.createElement('div');
   alert.id = id;
   alert.setAttribute('role', 'alert');

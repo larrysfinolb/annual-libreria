@@ -1,12 +1,10 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
-import BookcasesTable from '../templates/BookcasesTable';
-import { createBookcases } from '../utils/api';
 import { showAlert, hideAlert } from '../utils/alert';
 import validateStatus from '../utils/validateStatus';
 import { HeaderContent } from '../Components/HeaderContent';
 import { Table } from '../components/Table';
-import { getAllBookcases } from '../utils/api';
+import { deleteBookcases, getAllBookcases, updateBookcases } from '../utils/api';
 import { Alert } from '../components/Alert';
 
 const Bookcases = async (root, token) => {
@@ -40,7 +38,7 @@ const Bookcases = async (root, token) => {
 
   // Creamos la alerta de error
   props = { id: 'alert', style: 'danger' };
-  const alert = await Alert(props);
+  const alert = Alert(props);
   allNodes.push(alert);
 
   // Creamos la tabla
@@ -49,8 +47,13 @@ const Bookcases = async (root, token) => {
     return { Fila: bookcase.Fila, ...bookcase };
   });
 
-  props = { cols: ['#', 'Código', 'Descripción', 'Activo'], rows: newBookcases };
-  allNodes.push(Table(props));
+  const callBacks = {
+    delete: deleteBookcases,
+    form: updateBookcases,
+  };
+
+  props = { cols: ['Fila', 'Código', 'Descripción', 'Activo'], rows: newBookcases };
+  allNodes.push(Table(props, callBacks, token));
 
   section.append(...allNodes);
 

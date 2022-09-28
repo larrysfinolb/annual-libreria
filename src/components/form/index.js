@@ -1,53 +1,23 @@
-const Form = async (props, parent) => {
-  const div = document.createElement('div');
+import { Button } from '../Button';
 
-  div.innerHTML = `
-    <form class="row g-3">
-      ${props.inputs
-        .map(input => {
-          if (input.type !== 'radio') {
-            return `
-            <div class="col-sm-6">
-              <label for="${input.name}" class="form-label">${input.name}</label>
-              <input type="${input.type}" class="form-control" id="${input.name} name=""" required>
-						</div>`;
-          } else {
-            return `
-              <div class="col-sm-6">
-                ${input.names
-                  .map(name => {
-                    return `
-                      <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="radio" id="${name}" value="${
-                      name === 'Activo' ? 1 : 0
-                    }" ">
-                        <label class="form-check-label" for="${name}">${name}</label>
-                      </div>
-                    `;
-                  })
-                  .join('')}
-              </div>
-              `;
-          }
-        })
-        .join('')}
-        <div class="col-12">
-				  <button class="btn btn-dark w-100" type="submit" id="primaryBtn">${props.type}</button>
-        </div>
-        <div class="col-12">
-				  <button class="btn btn-secondary w-100" type="button" id="cancelBtn">Cancelar</button>
-        </div>
-    </form>
-  `;
+const Form = ({ allInputs }, callBack) => {
+  const form = document.createElement('form');
+  form.className = 'row g-3';
 
-  parent.innerHTML = '';
-  parent.append(div);
+  let props = {};
 
-  const primaryBtn = document.querySelector('#primaryBtn');
-  const cancelBtn = document.querySelector('#cancelBtn');
-  const modal = document.querySelector('#modal');
+  // Creamos el botón cancelar
+  props = { value: 'Cancelar', type: 'button', style: 'secondary', col: 12 };
+  const cancelButton = Button(props, () => document.querySelector('#modal').classList.remove('d-block'));
 
-  cancelBtn.addEventListener('click', () => modal.classList.remove('d-block'));
+  form.append(...allInputs, cancelButton);
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    callBack();
+  });
+
+  return form;
 };
 
 export { Form };

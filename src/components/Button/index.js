@@ -1,4 +1,4 @@
-const Button = async ({ value, type, style, col }, callback) => {
+const Button = ({ value, type, style, col }, callback) => {
   const button = document.createElement('button');
   button.textContent = value;
   button.type = type;
