@@ -1,8 +1,6 @@
-import hostname from './hostname';
-
 const logout = () => {
-	window.localStorage.removeItem('token');
-	window.location.href = `${hostname}/#login`;
+  window.localStorage.removeItem('token');
+  window.location.href = `${location.pathname}#login`;
 };
 
 export default logout;

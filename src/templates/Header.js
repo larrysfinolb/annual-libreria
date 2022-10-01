@@ -1,5 +1,3 @@
-import hostname from '../utils/hostname';
-
 const Header = root => {
   const view = `
     <header class="navbar navbar-dark bg-dark flex-md-nowrap p-0 shadow">
@@ -21,7 +19,7 @@ const Header = root => {
 
     logoutBtn.addEventListener('click', () => {
       window.localStorage.removeItem('token');
-      window.location.href = `${hostname}/#login`;
+      window.location.href = `${location.pathname}#login`;
     });
   } catch (error) {
     console.log('Error:', error);

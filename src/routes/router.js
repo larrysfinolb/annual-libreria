@@ -6,14 +6,13 @@ import Clients from '../pages/Clients';
 import Login from '../pages/Login';
 import NotFound from '../pages/NotFound';
 import getRoute from '../utils/getRoute';
-import hostname from '../utils/hostname';
 
 const router = async () => {
   const route = getRoute();
   const token = window.localStorage.getItem('token');
 
-  if (route !== '/login' && !token) window.location.href = `${hostname}/#login`;
-  else if (route === '/login' && token) window.location.href = `${hostname}/#`;
+  if (route !== '/login' && !token) window.location.href = `${location.pathname}#login`;
+  else if (route === '/login' && token) window.location.href = `${location.pathname}#`;
 
   const root = document.getElementById('root');
 
