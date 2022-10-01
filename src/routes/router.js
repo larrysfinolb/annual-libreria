@@ -1,5 +1,5 @@
 import Home from '../pages/Home';
-import Bookcases from '../pages/BookcasesV2';
+import { Bookcases } from '../pages/Bookcases';
 import InventoryInstances from '../pages/InventoryInstances';
 import Books from '../pages/Books';
 import Clients from '../pages/Clients';

@@ -40,6 +40,8 @@ export const createBookcases = async (deposito, token) => {
   const URL = `${API}/bookcases/create`;
 
   try {
+    deposito = { Activo: deposito.Activo, Codigo: deposito.Codigo, Descripcion: deposito.Descripcion };
+
     showSpinner();
     const result = await axios.post(URL, { deposito, token });
     hideSpinner();
@@ -55,6 +57,8 @@ export const updateBookcases = async (deposito, token) => {
   const URL = `${API}/bookcases/update`;
 
   try {
+    deposito = { Activo: deposito.Activo, Codigo: deposito.Codigo, Descripcion: deposito.Descripcion };
+
     showSpinner();
     const result = await axios.post(URL, { deposito, token });
     hideSpinner();

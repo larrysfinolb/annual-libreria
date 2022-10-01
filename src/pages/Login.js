@@ -1,5 +1,5 @@
 import { loginSaint } from '../utils/api';
-import { showAlert, hideAlert } from '../utils/alert';
+import { hideAlert } from '../utils/alert';
 import validateStatus from '../utils/validateStatus';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
@@ -25,19 +25,19 @@ const Login = async root => {
 
   // Creamos el input correo
   props = { labelValue: 'Correo electrónico', type: 'email', id: 'email', col: 12 };
-  allNodes.push(await Input(props));
+  allNodes.push(Input(props));
 
   // Creamos el input contraseña
   props = { labelValue: 'Contraseña', type: 'password', id: 'password', col: 12 };
-  allNodes.push(await Input(props));
+  allNodes.push(Input(props));
 
   // Creamos el botón submit
   props = { value: 'Iniciar sesión', type: 'submit', style: 'dark', col: 12 };
-  allNodes.push(await Button(props));
+  allNodes.push(Button(props));
 
   // Creamos la alerta de error
   props = { id: 'alert', style: 'danger' };
-  allNodes.push(await Alert(props));
+  allNodes.push(Alert(props));
 
   form.append(...allNodes);
 
@@ -53,7 +53,7 @@ const Login = async root => {
       hideAlert(alert);
       const result = await loginSaint(idUser, password);
 
-      validateStatus(result, alert, () => {
+      validateStatus(result, alert, 'Datos correcto.', () => {
         window.localStorage.setItem('token', result.Message);
         window.location.href = `${location.pathname}#`;
       });

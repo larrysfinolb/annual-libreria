@@ -1,83 +1,72 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
-import BookcasesTable from '../templates/BookcasesTable';
-import { createBookcases } from '../utils/api';
-import { showAlert, hideAlert } from '../utils/alert';
+import { HeaderContent } from '../components/HeaderContent';
+import { Table } from '../components/Table';
+import { createBookcases, deleteBookcases, getAllBookcases, updateBookcases } from '../utils/api';
+import { Alert } from '../components/Alert';
 import validateStatus from '../utils/validateStatus';
 
 const Bookcases = async (root, token) => {
-	const view = `
+  const view = `
 	<div id="header" class="sticky-top"></div>
 	<div class="container-fluid">
 		<div id="menu"></div>
 		<div class="row">
 			<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-				<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-					<h2 class="h1">Estantes</h2>
-				</div>
-				<section class="d-flex flex-column gap-2">
-					<h3 class="h2">Añade un Nuevo Estante</h3>
-					<form id="createForm" class="row g-3 w-100 mx-auto">
-						<div class="col-sm-6">
-							<label for="codigo" class="form-label">Código del Estante</label>
-							<input type="text" class="form-control" id="codigo" required>
-						</div>
-						<div class="col-sm-6">
-							<label for="activo" class="form-label">Estado del Estante (Activo)</label>
-							<input type="number" class="form-control" id="activo" step="1" min="0" max="1" required>
-						</div>
-						<div class="col-12">
-							<label for="descripcion" class="form-label">Descripción del Estante</label>
-							<input type="text" class="form-control" id="descripcion" required>
-						</div>
-						<div class="col-12">
-							<button class="btn btn-dark w-100" type="submit">Añadir</button>
-						</div>
-						<div class="alert d-flex align-items-center invisible" role="alert" id="formAlert"></div>
-					</form>
-				</section>
-				<section class="d-flex flex-column gap-2">
-					<h3 class="h2">Lista de Todos los Estantes</h3>
-					<div class="table-responsive" id="table"></div>
-					<div class="alert d-flex align-items-center invisible" role="alert" id="tableAlert"></div>
-				</section>
+        <section id="section"></section>
 			</main>
 		</div>
 	</div>
     `;
-	root.innerHTML = view;
-	await Header(document.querySelector('#header'));
-	await SidebarMenu(document.querySelector('#menu'));
-	await BookcasesTable(document.querySelector('#table'), token);
+  root.innerHTML = view;
 
-	try {
-		const formAlert = document.querySelector('#formAlert');
-		const createForm = document.querySelector('#createForm');
+  let props = {};
+  let inputs = [];
+  const callBacks = {
+    create: createBookcases,
+    delete: deleteBookcases,
+    update: updateBookcases,
+  };
 
-		createForm.addEventListener('submit', async (e) => {
-			e.preventDefault();
+  const section = document.querySelector('#section');
+  const allNodes = [];
 
-			const Activo = document.querySelector('#activo').value || 0;
-			const Codigo = document.querySelector('#codigo').value || '';
-			const Descripcion = document.querySelector('#descripcion').value || '';
+  await Header(document.querySelector('#header'));
+  await SidebarMenu(document.querySelector('#menu'));
 
-			if (isNaN(Number(Activo))) {
-				showAlert(formAlert, "El valor del Campo 'Activo' debe ser un número.", 'danger');
-				throw "El valor del Campo 'Activo' debe ser un número.";
-			}
+  // Creamos el Encabezado del contenido
+  // Creamos los inputs del formulario de agregar
+  inputs = [
+    { labelValue: 'Código', id: 'Codigo', type: 'text', col: 12 },
+    { labelValue: 'Descripción', id: 'Descripcion', type: 'text', col: 6 },
+    { labelValue: 'Activo', id: 'Activo', type: 'radio', options: ['Si', 'No'], optionDefault: 'Si', col: 6 },
+  ];
 
-			hideAlert(formAlert);
-			const result = await createBookcases({ Activo, Codigo, Descripcion }, token);
+  props = { title: 'Estantes', inputs };
+  allNodes.push(HeaderContent(props, callBacks, Bookcases, token));
 
-			validateStatus(result, formAlert, async () => {
-				showAlert(formAlert, 'El Estante ha sido añadido.', 'success');
-				createForm.reset();
-				await BookcasesTable(document.querySelector('#table'), token);
-			});
-		});
-	} catch (error) {
-		console.error('Error', error);
-	}
+  // Creamos la alerta de error
+  props = { id: 'alert', style: 'danger' };
+  const alert = Alert(props);
+  allNodes.push(alert);
+
+  // Creamos la tabla
+  const bookcases = await getAllBookcases(token);
+  validateStatus(bookcases, alert, 'Estantes cargados.', () => {
+    const newBookcases = bookcases.Data.map(bookcase => {
+      return { Fila: bookcase.Fila, ...bookcase };
+    });
+    inputs = [
+      { labelValue: 'Código', id: 'Codigo', type: 'text', col: 12, readonly: true },
+      { labelValue: 'Descripción', id: 'Descripcion', type: 'text', col: 6 },
+      { labelValue: 'Activo', id: 'Activo', type: 'radio', options: ['Si', 'No'], col: 6 },
+    ];
+    props = { cols: ['Fila', 'Código', 'Descripción', 'Activo'], rows: newBookcases, inputs };
+    allNodes.push(Table(props, callBacks, Bookcases, token));
+  });
+
+  // Agregamos todo el contenido a la sección
+  section.append(...allNodes);
 };
 
-export default Bookcases;
+export { Bookcases };

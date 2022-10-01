@@ -1,10 +1,10 @@
-import Searcher from './Searcher';
+// import Searcher from './Searcher';
 import { deleteBooks, getAllBookcases, getAllBooksByBookcases, updateBook } from '../utils/api';
 import { hideAlert, showAlert } from '../utils/alert';
 import validateStatus from '../utils/validateStatus';
 
 const BookTable = async (root, token) => {
-	const view = `
+  const view = `
 	<div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
 		<div class="flex-grow-1">
 		<select class="form-select" id="bookcases"></select>
@@ -24,36 +24,36 @@ const BookTable = async (root, token) => {
 		<tbody id="tbody"></tbody>
 	</table>
     `;
-	root.innerHTML = view;
+  root.innerHTML = view;
 
-	const tbody = document.querySelector('#tbody');
-	await Searcher(document.querySelector('#searcherContainer'), tbody);
+  const tbody = document.querySelector('#tbody');
+  // await Searcher(document.querySelector('#searcherContainer'), tbody);
 
-	const bookcases = document.querySelector('#bookcases');
+  const bookcases = document.querySelector('#bookcases');
 
-	try {
-		const result = await getAllBookcases(token);
+  try {
+    const result = await getAllBookcases(token);
 
-		validateStatus(result, null, () => {
-			const htmlBookcases = result.Data.map((row, index) => {
-				if (index !== 0) {
-					return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
-				} else {
-					return `				
+    validateStatus(result, null, () => {
+      const htmlBookcases = result.Data.map((row, index) => {
+        if (index !== 0) {
+          return `<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>`;
+        } else {
+          return `				
 				<option selected>Selecciona el Estante</option>
 				<option value="${row.Codigo}">${row.Codigo} | ${row.Descripcion}</option>
 				`;
-				}
-			}).join('');
-			bookcases.innerHTML = htmlBookcases;
-		});
+        }
+      }).join('');
+      bookcases.innerHTML = htmlBookcases;
+    });
 
-		bookcases.addEventListener('change', async () => {
-			const result = await getAllBooksByBookcases(bookcases.value, token);
+    bookcases.addEventListener('change', async () => {
+      const result = await getAllBooksByBookcases(bookcases.value, token);
 
-			validateStatus(result, null, () => {
-				const html = result.Data.map((row) => {
-					return `
+      validateStatus(result, null, () => {
+        const html = result.Data.map(row => {
+          return `
 						<tr>
 							<th scope="row">${row.Fila}</th>
 							<td>${row.Codigo}</td>
@@ -62,30 +62,30 @@ const BookTable = async (root, token) => {
 							<td>${row.CostoActual}</td>
 						</tr>
 					`;
-				}).join('');
-				tbody.innerHTML = html;
+        }).join('');
+        tbody.innerHTML = html;
 
-				buildModal(root, token, result);
-			});
-		});
-	} catch (error) {
-		console.error('Error', error);
-	}
+        buildModal(root, token, result);
+      });
+    });
+  } catch (error) {
+    console.error('Error', error);
+  }
 };
 
 const buildModal = (root, token, result) => {
-	document.querySelectorAll('#tbody tr').forEach((tr, index) => {
-		tr.addEventListener('click', () => {
-			const modal = document.querySelector('#modal');
+  document.querySelectorAll('#tbody tr').forEach((tr, index) => {
+    tr.addEventListener('click', () => {
+      const modal = document.querySelector('#modal');
 
-			const row = result.Data[index];
+      const row = result.Data[index];
 
-			const Codigo = row.Codigo || '';
-			let CodigoInstancia = row.CodigoInstancia || 0;
-			let CostoActual = row.CostoActual || 0;
-			let Descripcion = row.Descripcion || '';
+      const Codigo = row.Codigo || '';
+      let CodigoInstancia = row.CodigoInstancia || 0;
+      let CostoActual = row.CostoActual || 0;
+      let Descripcion = row.Descripcion || '';
 
-			const html = `
+      const html = `
 			<div class="modal-dialog modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-body">
@@ -119,48 +119,48 @@ const buildModal = (root, token, result) => {
 				</div>
 			</div>
 			`;
-			modal.innerHTML = html;
-			modal.classList.add('d-block');
+      modal.innerHTML = html;
+      modal.classList.add('d-block');
 
-			const modalAlert = document.querySelector('#modalAlert');
+      const modalAlert = document.querySelector('#modalAlert');
 
-			document.querySelector('#editForm').addEventListener('submit', async (e) => {
-				e.preventDefault();
+      document.querySelector('#editForm').addEventListener('submit', async e => {
+        e.preventDefault();
 
-				CodigoInstancia = document.querySelector('#codigoInstanciaModal').value || 0;
-				Descripcion = document.querySelector('#descripcionModal').value || '';
-				CostoActual = document.querySelector('#costoActualModal').value || 0;
+        CodigoInstancia = document.querySelector('#codigoInstanciaModal').value || 0;
+        Descripcion = document.querySelector('#descripcionModal').value || '';
+        CostoActual = document.querySelector('#costoActualModal').value || 0;
 
-				if (isNaN(Number(CodigoInstancia))) {
-					showAlert(formAlert, "El valor del Campo 'Código de Instancia' debe ser un número.", 'danger');
-					throw "El valor del Campo 'Código de Instancia' debe ser un número.";
-				} else if (isNaN(Number(CostoActual))) {
-					showAlert(formAlert, "El valor del Campo 'Costo' debe ser un número.", 'danger');
-					throw "El valor del Campo 'Costo' debe ser un número.";
-				}
+        if (isNaN(Number(CodigoInstancia))) {
+          showAlert(formAlert, "El valor del Campo 'Código de Instancia' debe ser un número.", 'danger');
+          throw "El valor del Campo 'Código de Instancia' debe ser un número.";
+        } else if (isNaN(Number(CostoActual))) {
+          showAlert(formAlert, "El valor del Campo 'Costo' debe ser un número.", 'danger');
+          throw "El valor del Campo 'Costo' debe ser un número.";
+        }
 
-				hideAlert(modalAlert);
-				const result = await updateBook({ Codigo, CodigoInstancia, CostoActual, Descripcion }, token);
+        hideAlert(modalAlert);
+        const result = await updateBook({ Codigo, CodigoInstancia, CostoActual, Descripcion }, token);
 
-				validateStatus(result, modalAlert, async () => {
-					modal.classList.remove('d-block');
-					return await BookTable(root, token);
-				});
-			});
+        validateStatus(result, modalAlert, async () => {
+          modal.classList.remove('d-block');
+          return await BookTable(root, token);
+        });
+      });
 
-			document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
-				hideAlert(modalAlert);
-				const result = await deleteBooks(Codigo, token);
+      document.querySelector('#deleteBtnModal').addEventListener('click', async () => {
+        hideAlert(modalAlert);
+        const result = await deleteBooks(Codigo, token);
 
-				validateStatus(result, modalAlert, async () => {
-					modal.classList.remove('d-block');
-					return await BookTable(root, token);
-				});
-			});
+        validateStatus(result, modalAlert, async () => {
+          modal.classList.remove('d-block');
+          return await BookTable(root, token);
+        });
+      });
 
-			document.querySelector('#closeBtnModal').addEventListener('click', () => modal.classList.remove('d-block'));
-		});
-	});
+      document.querySelector('#closeBtnModal').addEventListener('click', () => modal.classList.remove('d-block'));
+    });
+  });
 };
 
 export default BookTable;

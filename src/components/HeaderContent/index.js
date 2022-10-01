@@ -1,36 +1,42 @@
-// import { Form } from '../form';
+import { AddBtnEvent } from './events';
 
-const HeaderContent = async (props, parent) => {
-  const div = document.createElement('div');
-  div.classList.add('d-flex');
-  div.classList.add('justify-content-between');
-  div.classList.add('align-items-center');
-  div.classList.add('py-2');
-  div.classList.add('mb-3');
-  div.classList.add('border-bottom');
+const HeaderContent = ({ title, inputs }, callBacks, refreshTable, token) => {
+  // Creamos el título
+  const h2 = document.createElement('h2');
+  h2.className = 'h1';
+  h2.textContent = title;
 
-  div.innerHTML = `
-  <h2 class="h1">${props.title}</h2>
-    <div class="btn-group">
-      <button type="button" class="btn btn-sm btn-outline-secondary" id="addBtn">Agregar</button>
-      <button type="button" class="btn btn-sm btn-outline-secondary" id="exportBtn">Exportar</button>
-    </div>
-  `;
+  // Creamos el botón de agregar
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn btn-sm btn-outline-secondary';
+  addBtn.type = 'button';
+  addBtn.textContent = 'Agregar';
 
-  parent.append(div);
+  // Creamos el botón de exportar
+  /*const exportBtn = document.createElement('button');
+  exportBtn.className = 'btn btn-sm btn-outline-secondary';
+  exportBtn.type = 'button';
+  exportBtn.textContent = 'Exportar';*/
 
-  const addBtn = document.querySelector('#addBtn');
-  const exportBtn = document.querySelector('#exportBtn');
-  const modal = document.querySelector('#modal');
+  // Creamos el contenedor de los botones
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'btn-group';
 
-  addBtn.addEventListener('click', async () => {
-    await Form({ inputs: props.inputs, type: 'Agregar' }, modal.querySelector('.modal-body'));
-    modal.classList.add('d-block');
-  });
+  btnGroup.append(addBtn);
 
-  exportBtn.addEventListener('click', () => {
-    console.log('exportar');
-  });
+  // Creamos el contenedor
+  const container = document.createElement('div');
+  container.className = 'd-flex justify-content-between align-items-center py-2 mb-2 border-bottom';
+
+  container.append(h2, btnGroup);
+
+  AddBtnEvent(addBtn, inputs, callBacks, refreshTable, token);
+
+  // exportBtn.addEventListener('click', () => {
+  //   console.log('exportar');
+  // });
+
+  return container;
 };
 
 export { HeaderContent };

@@ -1,54 +1,60 @@
 import { validateStatus } from '../../utils/validateStatus';
 import { Button } from '../Button';
 import { Form } from '../Form';
-import { Input } from '../Input';
-import { RadioButton } from '../RadioButton';
+import { removeAccents } from '../../utils/removeAccents';
+import { TBody } from './tbody.js';
 
-const RowEvent = ({ tr, row }, callBacks, token) => {
+const RowEvent = ({ tr, row, inputs }, callBacks, refreshTable, token) => {
   tr.addEventListener('click', () => {
-    let props = {};
-
-    const allInputs = [];
-    for (const key in row) {
-      if (key !== 'Activo') {
-        let readOnly = false;
-        if (key === 'Fila' || key === 'Codigo') readOnly = true;
-
-        const type = key === 'Fila' ? 'number' : 'text';
-
-        props = { labelValue: key, inputValue: row[key], type, id: key, col: 6, readOnly };
-        allInputs.push(Input(props));
-      } else {
-        const optionDefault = row[key] === 0 ? 'No' : 'Si';
-
-        props = { labelValue: key, options: ['Si', 'No'], optionDefault, col: 6 };
-        allInputs.push(RadioButton(props));
-      }
-    }
-
-    props = { value: 'Actualizar', type: 'submit', style: 'dark', col: 6 };
-    allInputs.push(Button(props));
-
-    props = { value: 'Eliminar', type: 'button', style: 'danger', col: 6 };
-    allInputs.push(
-      Button(props, async () => {
-        const result = await callBacks['delete'](row['Codigo'], token);
-        validateStatus(result, 'Actualización exitosa.', () => {
-          tr.remove();
-        });
-        modal.classList.remove('d-block');
-      })
-    );
-
     const modal = document.querySelector('#modal');
 
+    let props = {};
+
+    inputs = inputs.map(input => {
+      if (input.type !== 'radio') {
+        return { ...input, inputValue: row[removeAccents(input.labelValue)] };
+      } else {
+        return { ...input, optionDefault: row[removeAccents(input.labelValue)] === 0 ? 'No' : 'Si' };
+      }
+    });
+
+    // Creamos el botón de eliminar
+    props = { value: 'Eliminar', type: 'button', style: 'danger', col: 6 };
+    const deleteButton = Button(props, async () => {
+      const alert = document.querySelector('#alert');
+      const result = await callBacks['delete'](row['Codigo'], token);
+      validateStatus(result, alert, 'Registro eliminado.', () => {
+        tr.remove();
+      });
+      modal.classList.remove('d-block');
+    });
+
     // Creamos el formulario
-    props = { allInputs };
-    modal.querySelector('.modal-body').replaceChildren(Form(props, callBacks['form']));
+    props = { colPrimary: 6, colCancel: 12, inputs, btn: deleteButton };
+    modal.querySelector('.modal-body').replaceChildren(Form(props, callBacks['update'], refreshTable, token));
 
     // Mostramos el modal
     modal.classList.add('d-block');
   });
 };
 
-export { RowEvent };
+const SelectEvent = ({ select, inputs }, callBacks, refreshTable, token) => {
+  select.addEventListener('change', async () => {
+    const alert = document.querySelector('#alert');
+
+    let props = {};
+
+    const result = await callBacks['getAll'](select.value, token);
+
+    validateStatus(result, alert, `Cargados.`, () => {
+      const rows = result.Data.map(row => {
+        return { Fila: row.Fila, ...row };
+      });
+
+      props = { rows, inputs };
+      document.querySelector('#tbody').replaceChildren(...TBody(props, callBacks, refreshTable, token));
+    });
+  });
+};
+
+export { RowEvent, SelectEvent };

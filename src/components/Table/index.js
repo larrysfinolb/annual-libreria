@@ -1,24 +1,47 @@
-import { RowEvent } from './events';
+import { RowEvent, SelectEvent } from './events';
 
-const Table = ({ cols, rows }, callBacks, token) => {
-  // div.innerHTML = `
-  //   <div class="d-flex mb-2">
-  //     ${!props.select ? '' : `s`}
-  //   </div>
-  // `;
-
+const Table = ({ cols, rows, inputs, select }, callBacks, refreshTable, token) => {
   // RENDERIZADO
+  const nodesContainer = [];
+
+  let props = {};
+
   // Buscador
   const searcher = document.createElement('input');
   searcher.className = 'form-control';
-  searcher.placeholder = '¿Qúe deseas buscar?';
+  searcher.placeholder = '¿Qué deseas buscar?';
+  nodesContainer.push(searcher);
 
   // Desplegable
+  if (select) {
+    const selectNode = document.createElement('select');
+    selectNode.className = 'form-select';
+
+    const allOptions = [];
+
+    const optionDefault = document.createElement('option');
+    optionDefault.textContent = 'Selecciona';
+    allOptions.push(optionDefault);
+
+    select.map(option => {
+      const optionNode = document.createElement('option');
+      optionNode.textContent = option.Descripcion;
+      optionNode.value = option.Codigo;
+      allOptions.push(optionNode);
+    });
+
+    selectNode.append(...allOptions);
+
+    props = { select: selectNode };
+    SelectEvent(props, callBacks, refreshTable, token);
+
+    nodesContainer.push(selectNode);
+  }
 
   // Contenedor del buscador y del desplegable
   const container = document.createElement('div');
-  container.className = 'd-flex mb-3';
-  container.append(searcher);
+  container.className = 'd-flex mb-3 gap-3';
+  container.append(...nodesContainer);
 
   // Header de la tabla con sus columnas
   const thead = document.createElement('thead');
@@ -34,6 +57,7 @@ const Table = ({ cols, rows }, callBacks, token) => {
 
   // Body de la tabla con sus filas
   const tbody = document.createElement('tbody');
+  tbody.id = 'tbody';
   const allTr = rows.map(row => {
     const tr = document.createElement('tr');
     const allTd = [];
@@ -48,8 +72,8 @@ const Table = ({ cols, rows }, callBacks, token) => {
     }
     tr.append(...allTd);
 
-    const props = { tr, row };
-    RowEvent(props, callBacks, token);
+    props = { tr, row, inputs };
+    RowEvent(props, callBacks, refreshTable, token);
 
     return tr;
   });

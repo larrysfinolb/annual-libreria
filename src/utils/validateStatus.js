@@ -1,12 +1,8 @@
-import { showAlert } from './alert';
 import logout from './logout';
 
-const validateStatus = (result, message, callback) => {
-  const alert = document.querySelector('#alert');
-
+const validateStatus = (result, alert, message, callback) => {
   if (result.Status === 0) {
     callback();
-
     alert.textContent = message;
     alert.classList.add('alert-success');
     alert.classList.remove('alert-danger');
