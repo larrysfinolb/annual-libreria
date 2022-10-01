@@ -3,6 +3,7 @@ import { Input } from '../Input';
 import { RadioButton } from '../RadioButton';
 import { removeAccents } from '../../utils/removeAccents';
 import { validateStatus } from '../../utils/validateStatus';
+import { Select } from '../Select';
 
 const Form = ({ colPrimary, colCancel, inputs, btn }, callBack, refreshTable, token) => {
   const modal = document.querySelector('#modal');
@@ -12,10 +13,12 @@ const Form = ({ colPrimary, colCancel, inputs, btn }, callBack, refreshTable, to
 
   // Creamos todos los inputs
   const allInputs = inputs.map(input => {
-    if (input.type !== 'radio') {
-      return Input(input);
-    } else {
+    if (input.type === 'radio') {
       return RadioButton(input);
+    } else if (input.type === 'select') {
+      return Select(input);
+    } else {
+      return Input(input);
     }
   });
 
@@ -39,15 +42,18 @@ const Form = ({ colPrimary, colCancel, inputs, btn }, callBack, refreshTable, to
   form.addEventListener('submit', async e => {
     e.preventDefault();
 
-    //
     let values = {};
     inputs.map(input => {
-      const name_ = removeAccents(input.labelValue);
+      const name_ = removeAccents(input.id);
       let value;
-      if (name_ !== 'Activo') value = document.querySelector(`input[name=${name_}]`).value;
-      else {
+
+      if (name_ === 'Activo') {
         const options = [...document.querySelectorAll(`input[name=${name_}`)];
         value = options[0].checked ? 1 : 0;
+      } else if (name_ === 'CodigoInstancia') {
+        value = document.querySelector(`select[name=${name_}]`).value;
+      } else {
+        value = document.querySelector(`input[name=${name_}]`).value;
       }
 
       values[name_] = value;

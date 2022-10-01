@@ -1,7 +1,6 @@
 import { validateStatus } from '../../utils/validateStatus';
 import { Button } from '../Button';
 import { Form } from '../Form';
-import { removeAccents } from '../../utils/removeAccents';
 import { TBody } from './tbody.js';
 
 const RowEvent = ({ tr, row, inputs }, callBacks, refreshTable, token) => {
@@ -12,9 +11,9 @@ const RowEvent = ({ tr, row, inputs }, callBacks, refreshTable, token) => {
 
     inputs = inputs.map(input => {
       if (input.type !== 'radio') {
-        return { ...input, inputValue: row[removeAccents(input.labelValue)] };
-      } else {
-        return { ...input, optionDefault: row[removeAccents(input.labelValue)] === 0 ? 'No' : 'Si' };
+        return { ...input, inputValue: row[input.id] };
+      } else if (input.type === 'select') {
+        return { ...input, optionDefault: row[input.id] === 0 ? 'No' : 'Si' };
       }
     });
 

@@ -8,7 +8,7 @@ import { Alert } from '../components/Alert';
 const Login = async root => {
   const view = `
     <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
-        <main class="row shadow w-100 rounded bg-light overflow-hidden" style="max-width: 750px">
+        <main class="row gap-2 shadow w-100 rounded bg-light overflow-hidden" style="max-width: 750px">
             <div class="col-12 col-sm-6 bg-login"></div>
             <form id="form" class="col-12 col-sm-6 row g-3 mb-4">
                 <h2 class="h2 fw-bold text-center py-3 py-sm-5">Annual Librería</h2>

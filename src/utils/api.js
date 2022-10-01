@@ -167,6 +167,13 @@ export const createBook = async (producto, token) => {
   const URL = `${API}/books/create`;
 
   try {
+    producto = {
+      Codigo: producto.Codigo,
+      CodigoInstancia: producto.CodigoInstancia,
+      CostoActual: producto.CostoActual,
+      Descripcion: producto.Descripcion,
+    };
+
     showSpinner();
     const result = await axios.post(URL, { producto, token });
     hideSpinner();
@@ -182,6 +189,13 @@ export const updateBook = async (producto, token) => {
   const URL = `${API}/books/update`;
 
   try {
+    producto = {
+      Codigo: producto.Codigo,
+      CodigoInstancia: producto.CodigoInstancia,
+      CostoActual: producto.CostoActual,
+      Descripcion: producto.Descripcion,
+    };
+
     showSpinner();
     const result = await axios.post(URL, { producto, token });
     hideSpinner();
@@ -225,10 +239,18 @@ export const getAllClients = async token => {
     return error.response.data;
   }
 };
-export const createClient = async (cliente, usuario, token) => {
+export const createClient = async (cliente, token) => {
   const URL = `${API}/clients/create`;
 
   try {
+    cliente = {
+      Activo: cliente.Activo,
+      Codigo: cliente.Codigo,
+      Descripcion: cliente.Descripcion,
+      IDFiscal: cliente.IDFiscal,
+    };
+    const usuario = {};
+
     showSpinner();
     const result = await axios.post(URL, { cliente, usuario, token });
     hideSpinner();
@@ -240,10 +262,18 @@ export const createClient = async (cliente, usuario, token) => {
     return error.response.data;
   }
 };
-export const updateClient = async (cliente, usuario, token) => {
+export const updateClient = async (cliente, token) => {
   const URL = `${API}/clients/update`;
 
   try {
+    cliente = {
+      Activo: cliente.Activo,
+      Codigo: cliente.Codigo,
+      Descripcion: cliente.Descripcion,
+      IDFiscal: cliente.IDFiscal,
+    };
+    const usuario = {};
+
     showSpinner();
     const result = await axios.post(URL, { cliente, usuario, token });
     hideSpinner();

@@ -1,4 +1,4 @@
-const Input = ({ labelValue, inputValue, placeholder, type, id, col, readonly }) => {
+const Input = ({ labelValue, inputValue, placeholder, type, id, col, readonly, min, step }) => {
   const label = document.createElement('label');
   label.className = 'form-label';
   label.setAttribute('for', id);
@@ -13,6 +13,8 @@ const Input = ({ labelValue, inputValue, placeholder, type, id, col, readonly })
   if (placeholder) input.placeholder = placeholder;
   if (inputValue) input.value = inputValue;
   if (readonly) input.readOnly = true;
+  if (min !== undefined) input.setAttribute('min', min);
+  if (step) input.step = step;
 
   const wrap = document.createElement('div');
   wrap.className = `col-${col}`;

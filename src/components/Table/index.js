@@ -32,7 +32,7 @@ const Table = ({ cols, rows, inputs, select }, callBacks, refreshTable, token) =
 
     selectNode.append(...allOptions);
 
-    props = { select: selectNode };
+    props = { select: selectNode, inputs };
     SelectEvent(props, callBacks, refreshTable, token);
 
     nodesContainer.push(selectNode);

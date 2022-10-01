@@ -1,7 +1,5 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
-import BooksTable from '../templates/BooksTable';
-import { hideAlert, showAlert } from '../utils/alert';
 import {
   createBook,
   deleteBooks,
@@ -39,11 +37,19 @@ const Books = async (root, token) => {
   await Header(document.querySelector('#header'));
   await SidebarMenu(document.querySelector('#menu'));
 
+  const inventoryInstances = await getAllInventoryInstances(token);
+
   // Creamos el Encabezado del contenido
   // Creamos los inputs del formulario de agregar
   inputs = [
     { labelValue: 'Código', id: 'Codigo', type: 'text', col: 6 },
-    { labelValue: 'Codigo de instancia', id: 'CodigoInstancia', type: 'select', col: 6 },
+    {
+      labelValue: 'Codigo de instancia',
+      id: 'CodigoInstancia',
+      type: 'select',
+      options: inventoryInstances.Data,
+      col: 6,
+    },
     { labelValue: 'Descripción', id: 'Descripcion', type: 'text', col: 6 },
     {
       labelValue: 'Costo',
@@ -65,12 +71,12 @@ const Books = async (root, token) => {
 
   // Creamos la tabla
   const bookcases = await getAllBookcases(token);
-  validateStatus(bookcases, alert, 'Libros cargados.', () => {
+  validateStatus(bookcases, alert, 'Libros cargados.', async () => {
     inputs = [
       { labelValue: 'Códgio', id: 'Codigo', type: 'text', col: 6, readonly: true },
       {
         labelValue: 'Costo',
-        id: 'Costo',
+        id: 'CostoActual',
         type: 'number',
         min: 0,
         step: 0.001,
@@ -81,6 +87,7 @@ const Books = async (root, token) => {
         labelValue: 'Código de instancia',
         id: 'CodigoInstancia',
         type: 'select',
+        options: inventoryInstances.Data,
         col: 12,
       },
     ];

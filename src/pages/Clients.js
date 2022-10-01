@@ -1,7 +1,5 @@
 import Header from '../templates/Header';
 import SidebarMenu from '../templates/SidebarMenu';
-import ClientsTable from '../templates/ClientsTable';
-import { hideAlert, showAlert } from '../utils/alert';
 import validateStatus from '../utils/validateStatus';
 import { createClient, deleteClient, getAllClients, updateClient } from '../utils/api';
 import { HeaderContent } from '../components/HeaderContent';
@@ -36,8 +34,8 @@ const Clients = async (root, token) => {
   // Creamos los inputs del formulario de agregar
   inputs = [
     { labelValue: 'Código', id: 'Codigo', type: 'text', col: 6 },
-    { labelValue: 'Nombre', id: 'Descripcion', type: 'text', col: 6 },
-    { labelValue: 'ID Fiscal', id: 'IdFiscal', type: 'text', col: 6 },
+    { labelValue: 'Descripción', id: 'Descripcion', type: 'text', col: 6 },
+    { labelValue: 'ID Fiscal', id: 'IDFiscal', type: 'text', col: 6 },
     { labelValue: 'Activo', id: 'Activo', type: 'radio', options: ['Si', 'No'], optionDefault: 'Si', col: 6 },
   ];
 
@@ -55,8 +53,13 @@ const Clients = async (root, token) => {
     const newClients = clients.Data.map(client => {
       return { Fila: client.Fila, ...client };
     });
-    inputs = [];
-    props = { cols: ['Fila', 'Código', 'Nombre', 'ID Fiscal', 'Activo'], rows: newClients, inputs };
+    inputs = [
+      { labelValue: 'Código', id: 'Codigo', type: 'text', col: 6, readonly: true },
+      { labelValue: 'Descripción', id: 'Descripcion', type: 'text', col: 6 },
+      { labelValue: 'ID Fiscal', id: 'IDFiscal', type: 'text', col: 6 },
+      { labelValue: 'Activo', id: 'Activo', type: 'radio', options: ['Si', 'No'], col: 6 },
+    ];
+    props = { cols: ['Fila', 'Código', 'Descripción', 'ID Fiscal', 'Activo'], rows: newClients, inputs };
     allNodes.push(Table(props, callBacks, Clients, token));
   });
 

@@ -17,6 +17,7 @@ const TBody = ({ rows, inputs }, callBacks, refreshTable, token) => {
 
       allTd.push(td);
     }
+
     props = { tr, row, inputs };
     RowEvent(props, callBacks, refreshTable, token);
 
