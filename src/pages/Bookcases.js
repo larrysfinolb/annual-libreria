@@ -1,5 +1,5 @@
-import Header from '../templates/Header';
-import SidebarMenu from '../templates/SidebarMenu';
+import { Header } from '../components/Header';
+import { SidebarMenu } from '../components/SidebarMenu';
 import { HeaderContent } from '../components/HeaderContent';
 import { Table } from '../components/Table';
 import { createBookcases, deleteBookcases, getAllBookcases, updateBookcases } from '../utils/api';

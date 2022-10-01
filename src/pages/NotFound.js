@@ -1,8 +1,8 @@
-import Header from '../templates/Header';
-import SidebarMenu from '../templates/SidebarMenu';
+import { Header } from '../components/Header';
+import { SidebarMenu } from '../components/SidebarMenu';
 
-const NotFound = async (root) => {
-	const view = `
+const NotFound = async root => {
+  const view = `
 	<div id="header" class="sticky-top"></div>
 	<div class="container-fluid">
 		<div id="menu"></div>
@@ -15,9 +15,9 @@ const NotFound = async (root) => {
 		</div>
 	</div>
     `;
-	root.innerHTML = view;
-	await Header(document.querySelector('#header'));
-	await SidebarMenu(document.querySelector('#menu'));
+  root.innerHTML = view;
+  await Header(document.querySelector('#header'));
+  await SidebarMenu(document.querySelector('#menu'));
 };
 
-export default NotFound;
+export { NotFound };

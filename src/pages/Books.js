@@ -1,5 +1,5 @@
-import Header from '../templates/Header';
-import SidebarMenu from '../templates/SidebarMenu';
+import { Header } from '../components/Header';
+import { SidebarMenu } from '../components/SidebarMenu';
 import {
   createBook,
   deleteBooks,
@@ -104,4 +104,4 @@ const Books = async (root, token) => {
   section.append(...allNodes);
 };
 
-export default Books;
+export { Books };

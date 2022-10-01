@@ -63,4 +63,4 @@ const Login = async root => {
   }
 };
 
-export default Login;
+export { Login };

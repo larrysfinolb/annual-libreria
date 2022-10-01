@@ -1,11 +1,11 @@
-import Home from '../pages/Home';
+import { Home } from '../pages/Home';
 import { Bookcases } from '../pages/Bookcases';
-import InventoryInstances from '../pages/InventoryInstances';
-import Books from '../pages/Books';
-import Clients from '../pages/Clients';
-import Login from '../pages/Login';
-import NotFound from '../pages/NotFound';
-import getRoute from '../utils/getRoute';
+import { InventoryInstances } from '../pages/InventoryInstances';
+import { Books } from '../pages/Books';
+import { Clients } from '../pages/Clients';
+import { Login } from '../pages/Login';
+import { NotFound } from '../pages/NotFound';
+import { getRoute } from '../utils/getRoute';
 
 const router = async () => {
   const route = getRoute();
@@ -41,4 +41,4 @@ const router = async () => {
   }
 };
 
-export default router;
+export { router };

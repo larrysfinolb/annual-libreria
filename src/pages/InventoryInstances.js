@@ -1,8 +1,8 @@
 import { Alert } from '../components/Alert';
 import { HeaderContent } from '../components/HeaderContent';
 import { Table } from '../components/Table';
-import Header from '../templates/Header';
-import SidebarMenu from '../templates/SidebarMenu';
+import { Header } from '../components/Header';
+import { SidebarMenu } from '../components/SidebarMenu';
 import {
   createInventoryInstance,
   deleteInventoryInstance,
@@ -69,4 +69,4 @@ const InventoryInstances = async (root, token) => {
   section.append(...allNodes);
 };
 
-export default InventoryInstances;
+export { InventoryInstances };

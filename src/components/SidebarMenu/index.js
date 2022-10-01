@@ -53,4 +53,4 @@ const SidebarMenu = root => {
   root.innerHTML = view;
 };
 
-export default SidebarMenu;
+export { SidebarMenu };

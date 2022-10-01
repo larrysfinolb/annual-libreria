@@ -26,4 +26,4 @@ const Header = root => {
   }
 };
 
-export default Header;
+export { Header };

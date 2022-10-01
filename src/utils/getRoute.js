@@ -1,10 +1,10 @@
 const getRoute = () => {
-	const hash = window.location.hash;
-	if (hash === '') return '/';
+  const hash = window.location.hash;
+  if (hash === '') return '/';
 
-	const route = `/${hash.slice(1)}`;
+  const route = `/${hash.slice(1)}`;
 
-	return route;
+  return route;
 };
 
-module.exports = getRoute;
+export { getRoute };

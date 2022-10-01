@@ -1,4 +1,4 @@
-import router from './src/routes/router';
+import { router } from './src/routes';
 import './public/styles/main.css';
 
 window.addEventListener('load', router);

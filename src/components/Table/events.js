@@ -12,7 +12,7 @@ const RowEvent = ({ tr, row, inputs }, callBacks, refreshTable, token) => {
     inputs = inputs.map(input => {
       if (input.type !== 'radio') {
         return { ...input, inputValue: row[input.id] };
-      } else if (input.type === 'select') {
+      } else {
         return { ...input, optionDefault: row[input.id] === 0 ? 'No' : 'Si' };
       }
     });
@@ -30,6 +30,7 @@ const RowEvent = ({ tr, row, inputs }, callBacks, refreshTable, token) => {
 
     // Creamos el formulario
     props = { colPrimary: 6, colCancel: 12, inputs, btn: deleteButton };
+
     modal.querySelector('.modal-body').replaceChildren(Form(props, callBacks['update'], refreshTable, token));
 
     // Mostramos el modal

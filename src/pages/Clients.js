@@ -1,5 +1,5 @@
-import Header from '../templates/Header';
-import SidebarMenu from '../templates/SidebarMenu';
+import { Header } from '../components/Header';
+import { SidebarMenu } from '../components/SidebarMenu';
 import validateStatus from '../utils/validateStatus';
 import { createClient, deleteClient, getAllClients, updateClient } from '../utils/api';
 import { HeaderContent } from '../components/HeaderContent';
@@ -67,4 +67,4 @@ const Clients = async (root, token) => {
   section.append(...allNodes);
 };
 
-export default Clients;
+export { Clients };
